@@ -1,29 +1,48 @@
 # code source: https://grunwaldlab.github.io/analysis_of_microbiome_community_data_in_r/07--diversity_stats.html
 
+#clear environment
+rm(list = ls())
+
 #load packages
 library(vegan)
-library(otuSummary)
+library(tidyverse)
+library(dplyr)
 
-#load samples
-load("clean_data.Rdata")
 
+#### 2017 Invasion Alpha####
 # import data
-DOD2017_invaded <- read.csv("DOD2017_invaded_byrow.csv")
+DOD2017_invaded <- read_csv("DOD2017_invaded_byrow.csv")
+
+#Calculate alpha + add new column
+DOD2017_invaded$alpha <- diversity(DOD2017_invaded,
+                                   MARGIN = 1,
+                                   index = "shannon")
 
 
-#test code
-sample_data$alpha <- diversity(obj$data$otu_rarefied[, sample_data$SampleID],
-                               MARGIN = 2,
-                               index = "invsimpson")
-hist(sample_data$alpha)
-
-
-#code with DOD data
-DOD2017_invaded$alpha <- diversity(obj$data$otu_rarefied[, DOD2017_invaded$OTUID$Taxonomy],
-                               MARGIN = 1,
-                               index = "invsimpson")
 hist(DOD2017_invaded$alpha)
 
 
+#### 2017 Control Alpha ####
+# import data
+DOD2017_uninvaded <- read_csv("DOD2017_uninvaded_byrow.csv")
 
+#Calculate alpha + add new column
+DOD2017_uninvaded$alpha <- diversity(DOD2017_uninvaded,
+                                   MARGIN = 1,
+                                   index = "shannon")
+
+hist(DOD2017_uninvaded$alpha)
+
+
+#### 2017 Eradicated #### 
+# import data
+DOD2017_eradicated <- read_csv("DOD2017_eradicated_byrow.csv")
+
+#Calculate alpha + add new column
+DOD2017_eradicated$alpha <- diversity(DOD2017_eradicated,
+                                     MARGIN = 1,
+                                     index = "shannon")
+
+
+hist(DOD2017_eradicated$alpha)
 
