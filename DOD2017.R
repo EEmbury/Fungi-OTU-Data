@@ -28,8 +28,8 @@ DOD2017_uninvaded <- read_csv("DOD2017_uninvaded_byrow.csv")
 
 #Calculate alpha + add new column
 DOD2017_uninvaded$alpha <- diversity(DOD2017_uninvaded,
-                                   MARGIN = 1,
-                                   index = "shannon")
+                                     MARGIN = 1,
+                                     index = "shannon")
 
 hist(DOD2017_uninvaded$alpha)
 
@@ -40,9 +40,8 @@ DOD2017_eradicated <- read_csv("DOD2017_eradicated_byrow.csv")
 
 #Calculate alpha + add new column
 DOD2017_eradicated$alpha <- diversity(DOD2017_eradicated,
-                                     MARGIN = 1,
-                                     index = "shannon")
+                                      MARGIN = 1,
+                                      index = "shannon")
 
 
 hist(DOD2017_eradicated$alpha)
-
