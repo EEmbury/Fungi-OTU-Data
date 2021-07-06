@@ -72,5 +72,16 @@ summary(anova_result)
 
 DOD2017_combined <- read_csv("DOD2017_combined.csv")
 
-beta_dist <- vegdist(DOD2017_combined,
+
+beta_dist <- vegdist(DOD2017_combined[, DOD2017_combined$Type],
+                       index = "bray")
+
+beta_dist <- vegdist(t(obj$data$otu_rarefied[, DOD2017_combined$Type]),
                      index = "bray")
+
+
+
+
+
+
+
