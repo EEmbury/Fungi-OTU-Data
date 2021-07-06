@@ -70,7 +70,7 @@ summary(anova_result)
 
 #### Beta Diversity ####
 
-DOD2017_combined <- read_csv("DOD2017_combined.csv")
+DOD2017_combined <- read_csv("DOD2017_combined_by_type.csv")
 
 
 beta_dist <- vegdist(DOD2017_combined[, DOD2017_combined$Type],
@@ -80,8 +80,12 @@ beta_dist <- vegdist(t(obj$data$otu_rarefied[, DOD2017_combined$Type]),
                      index = "bray")
 
 
+# take 2
+
+install.packages("betapart")
+  library(betapart)
 
 
-
+beta.data <- beta.sample.abund(DOD2017_combined, index.family="bray")
 
 
