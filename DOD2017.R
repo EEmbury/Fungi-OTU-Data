@@ -1,6 +1,8 @@
 # code source: https://grunwaldlab.github.io/analysis_of_microbiome_community_data_in_r/07--diversity_stats.html
 
 
+#### set up ####
+
 # example data
 load("clean_data.Rdata")
 
@@ -68,21 +70,7 @@ summary(anova_result)
 
 #### Beta Diversity ####
 
+DOD2017_combined <- read_csv("DOD2017_combined.csv")
 
-# Beta Invaded #
-beta_dist_invaded <- vegdist(DOD2017_invaded,
+beta_dist <- vegdist(DOD2017_combined,
                      index = "bray")
-
-#Beta Uninvaded #
-beta_dist_uninvaded <- vegdist(DOD2017_uninvaded,
-                             index = "bray")
-
-#Beta eradicated #
-beta_dist_eradicated <- vegdist(DOD2017_eradicated,
-                             index = "bray")
-
-#### mds data ####
-
-
-
-
