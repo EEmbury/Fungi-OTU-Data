@@ -36,7 +36,7 @@ hist(DOD2017_uninvaded$alpha)
 
 #### 2017 Eradicated #### 
 # import data
-DOD2017_eradicated <- read_csv("DOD2017_eradicated_byrow.csv")
+DOD2017_eradicated <- read_csv("DOD2017_eradicated_byrow_corrected.csv")
 
 #Calculate alpha + add new column
 DOD2017_eradicated$alpha <- diversity(DOD2017_eradicated,
@@ -45,3 +45,18 @@ DOD2017_eradicated$alpha <- diversity(DOD2017_eradicated,
 
 
 hist(DOD2017_eradicated$alpha)
+
+### ANOVA test
+
+DOD2017_alpha <- read_csv("DOD2017_alpha.csv")
+
+anova_result <- aov(DOD2017_alpha)
+summary(anova_result)
+
+
+
+
+
+
+
+
