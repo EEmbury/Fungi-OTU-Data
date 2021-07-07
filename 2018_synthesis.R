@@ -23,4 +23,56 @@ data$alpha <- diversity(data,
 write.csv(data,"name.csv", row.names = FALSE)
 
 
-#####Alpha diversity analysis####
+##### Alpha = Study #1 ####
+
+
+####Garlic mustard + warming
+
+Heatgm1 <- read_csv("2018_1_Heat_GM.csv")
+
+Heatgm1$alpha <- diversity(Heatgm1,
+                        MARGIN = 1,
+                        index = "shannon")
+
+write.csv(Heatgm1,"2018_1_Heat_GM_alpha.csv", row.names = FALSE)
+
+
+####N0 (control N) + Garlic mustard 
+
+NOGM1 <- read_csv("2018_1_N0_GM.csv")
+
+#Calculate alpha + add new column
+NOGM1$alpha <- diversity(NOGM1,
+                        MARGIN = 1,
+                        index = "shannon")
+
+write.csv(NOGM1,"2018_1_N0_GM_alpha.csv", row.names = FALSE)
+
+
+
+####N50 + Garlic mustard
+
+N50GM1 <- read_csv("2018_1_N50_GM.csv")
+
+
+#Calculate alpha + add new column
+N50GM1$alpha <- diversity(N50GM1,
+                        MARGIN = 1,
+                        index = "shannon")
+
+write.csv(N50GM1,"2018_1_N50_GM_alpha.csv", row.names = FALSE)
+
+
+#### Garlic mustard control
+
+GM1 <- read_csv("2018_1_GM.csv")
+
+#Calculate alpha + add new column
+GM1$alpha <- diversity(GM1,
+                        MARGIN = 1,
+                        index = "shannon")
+
+write.csv(GM1,"2018_1_GM_alpha.csv", row.names = FALSE)
+
+
+
