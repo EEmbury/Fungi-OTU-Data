@@ -76,3 +76,29 @@ write.csv(GM1,"2018_1_GM_alpha.csv", row.names = FALSE)
 
 
 
+#### Alpha = Study #2 ####
+
+### Warming ###
+
+warm2 <- read_csv("2018_2_warm.csv")
+
+#Calculate alpha + add new column
+warm2$alpha <- diversity(warm2,
+                        MARGIN = 1,
+                        index = "shannon")
+
+write.csv(warm2,"2018_2_warm_alpha.csv", row.names = FALSE)
+
+
+### control ###
+
+control2 <- read_csv("2018_2_control.csv")
+
+#Calculate alpha + add new column
+control2$alpha <- diversity(control2,
+                        MARGIN = 1,
+                        index = "shannon")
+
+write.csv(control2,"2018_2_control_alpha.csv", row.names = FALSE)
+
+
