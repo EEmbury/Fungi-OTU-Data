@@ -127,6 +127,9 @@ beta_dist_eradicated <- vegdist(DOD2017_eradicated,
                                index = "bray")
 
 
+view(beta_dist_eradicated)
+
+
 ### mds code  ####
 
 # invaded
@@ -140,7 +143,8 @@ mds_data_invaded$SampleID <- rownames(mds_data_invaded)
 
 library(ggplot2)
 ggplot(mds_data_invaded, aes(x = MDS1, y = MDS2)) +
-  geom_point()
+  ggtitle("Invaded")+
+  geom_point(color='orangered1')
 
 #uninvaded
 
@@ -153,7 +157,8 @@ mds_data_uninvaded$SampleID <- rownames(mds_data_uninvaded)
 
 library(ggplot2)
 ggplot(mds_data_uninvaded, aes(x = MDS1, y = MDS2)) +
-  geom_point()
+  ggtitle("Uninvaded")+
+  geom_point(color='lightseagreen')
 
 
 # eradicated
@@ -167,5 +172,58 @@ mds_data_eradicated$SampleID <- rownames(mds_data_eradicated)
 
 library(ggplot2)
 ggplot(mds_data_eradicated, aes(x = MDS1, y = MDS2)) +
-  geom_point()
+  ggtitle("Eradicated")+
+  geom_point(color = 'mediumpurple3')
 
+
+# 
+# #together
+# 
+# together <- rbind(mds_data_invaded, mds_data_eradicated, mds_data_uninvaded)
+# 
+# library(ggplot2)
+# ggplot(together, aes(x = MDS1, y = MDS2)) +
+#   geom_point()
+# 
+# 
+# 
+# ggplot(aes(x = MDS1, y = MDS2)) + 
+#   geom_point(data=mds_data_eradicated,  color='green') + 
+#   geom_point(data=mds_data_invaded,  color='red') +
+#   geom_point(data=mds_data_uninvaded,  color='blue')
+
+#save pdf
+
+pdf("DOD2017_beta.pdf") 
+# This tells the graphic device (a.k.a., plotting area) in R that we want to save the plot as a pdf.
+library(ggplot2)
+ggplot(mds_data_invaded, aes(x = MDS1, y = MDS2)) +
+  ggtitle("Invaded")+
+  geom_point(color='orangered1')
+
+library(ggplot2)
+ggplot(mds_data_uninvaded, aes(x = MDS1, y = MDS2)) +
+  ggtitle("Uninvaded")+
+  geom_point(color='lightseagreen')
+
+
+library(ggplot2)
+ggplot(mds_data_eradicated, aes(x = MDS1, y = MDS2)) +
+  ggtitle("Eradicated")+
+  geom_point(color = 'mediumpurple3')
+
+# Here is our code for the plot.  
+dev.off()
+
+
+
+
+### an attempt to make the data formated like the sample data ####
+
+is.numeric(sample_data)
+class(sample_data)
+
+class(DOD2017_invaded)
+
+DOD2017_invaded_TEST <- read_csv("DOD2017_invaded.csv")
+grouped_df(DOD2017_invaded_TEST, vars = DOD2017_invaded_TEST$OTUID, drop = FALSE)
