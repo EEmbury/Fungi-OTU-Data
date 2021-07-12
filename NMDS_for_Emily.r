@@ -1,3 +1,6 @@
+#clear environment
+rm(list = ls())
+
 # ### Original Code ####
 # 
 # ##################################NMDS all VOCs
@@ -142,6 +145,85 @@ jpeg("DOD2015.jpeg",height=6,width=10,units = 'in', res = 600)#height in inches,
 plot(DOD)
 dev.off()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Oak reciprocal ####
+
+otu_rel_DOD <- read.csv("oak_reciprocal_transplant_by type.csv", header = T, sep = ",")
+View(otu_rel_DOD)
+dim(otu_rel_DOD) ####27, 3446
+comm.num.DOD <- otu_rel_DOD[ ,2:3446]
+View(comm.num.DOD)
+set.seed(200)
+library(vegan)
+otu.nms_1 <- metaMDS(comm.num.DOD, distance = "bray", trymax = 2000, autotransform = F)
+otu.nms_1
+otu.nms_2 <- otu_rel_DOD[ ,1:1]
+View(otu.nms_2)
+MDS1 = otu.nms_1$points[,1]
+MDS1
+MDS2 = otu.nms_1$points[,2]
+MDS2
+NMDS = data.frame(MDS1 = MDS1, MDS2 = MDS2, Treatment = otu_rel_DOD$Type)
+library(ggplot2)
+
+
+plot <- qplot(MDS1, MDS2, data=NMDS, main = "Oak Reciprocal Transplant", color=Treatment, alpha=0.5, size = 1) + guides(size = "none") + guides(alpha = 'none')
+plot 
+
+
+library(RColorBrewer)
+
+cbbPalette <- c("#009E73", "#e79f00", "#0072B2", "#D55E00", "#CC79A7", "#9999CC")
+
+
+DOD <- plot + 
+  theme(panel.grid = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+        axis.title.x = element_text(color="black", vjust=1),
+        axis.title.y = element_text(color="black" , vjust=1),
+        title = element_text(color = 'black')) +
+  #stat_ellipse(size=1.5)+
+  scale_color_manual(values = cbbPalette) +
+  theme(strip.background = element_rect(colour="black", fill="white",
+                                        size=0.5, linetype="solid"))
+
+
+DOD
+jpeg("DOD2015.jpeg",height=6,width=10,units = 'in', res = 600)#height in inches, resolution 600 dpi
+plot(DOD)
+dev.off()
 
 # #### attempt #2 #####
 # 
