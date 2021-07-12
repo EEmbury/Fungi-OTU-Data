@@ -63,12 +63,19 @@ MDS1 = otu.nms_1$points[,1]
 MDS1
 MDS2 = otu.nms_1$points[,2]
 MDS2
-NMDS = data.frame(MDS1 = MDS1, MDS2 = MDS2, treatment = otu_rel_DOD$Type)
+NMDS = data.frame(MDS1 = MDS1, MDS2 = MDS2, Treatment = otu_rel_DOD$Type)
 library(ggplot2)
 
 
-plot <- qplot(MDS1, MDS2, data=NMDS, color=otu_rel_DOD$Type, alpha=0.5, size=1)
-plot
+plot <- qplot(MDS1, MDS2, data=NMDS, color=Treatment, alpha=0.5, size = 1) + guides(size = "none") + guides(alpha = 'none')
+plot 
+
+
+ggplot(mds_data_invaded, aes(x = MDS1, y = MDS2)) +
+  ggtitle("Invaded")+
+  geom_point(color='orangered1')
+
+
 
 library(RColorBrewer)
 
@@ -80,14 +87,12 @@ DOD <- plot +
         panel.background = element_rect(fill = "white"),
         panel.border = element_rect(color = "black", fill = NA, size = 0.5),
         axis.title.x = element_text(color="black", vjust=1),
-        axis.title.y = element_text(color="black" , vjust=1)) +
-        stat_ellipse()+
+        axis.title.y = element_text(color="black" , vjust=1),
+        title = element_text(color = 'black')) +
+        #stat_ellipse(size=1.5)+
   scale_color_manual(values = cbbPalette) +
   theme(strip.background = element_rect(colour="black", fill="white",
                                         size=0.5, linetype="solid"))
-
-
-
 
 
 DOD
@@ -120,3 +125,22 @@ dev.off()
 # colors =c(rep("red", 45), rep("blue", 42), rep("yellow", 45))
 # 
 # ordiplot(NMDS, choices = c(MDS1, MDS2), type="points")
+
+
+
+
+
+#### attempt #3 w/ hull ####
+
+# loc = na.omit(NMDS) %>%
+#   group_by(Treatment) %>%
+#   mutate(hull = 1:n(), hull = factor(hull, chull(MDS1, MDS2))) %>%
+#   arrange(hull)
+# 
+# ggplot(loc, aes(MDS1, MDS2, color = Treatment, fill = Treatment)) +
+#   geom_polygon(data = filter(loc, !is.na(hull)), alpha = 0.5) +
+#   geom_point() +
+#   guides(color = FALSE, fill = FALSE) +
+#   theme_bw() +
+#   theme(axis.text = element_blank())
+
