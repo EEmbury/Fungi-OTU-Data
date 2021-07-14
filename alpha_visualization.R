@@ -8,6 +8,8 @@ otudata <- read.csv("DOD2017_otu_matix.csv")
 otutax <- read.csv("DOD2017_seperate_taxa.csv")
 samdata <- read.csv("DOD2017_metadata.csv")
 
+#coerce matrix
+
 test <- as.matrix(otu_taxa, rownames.force = NA)
 
 #change row labels
@@ -24,16 +26,26 @@ otutax$OTU <- sub(otutax$OTU,
 
 otu_taxa <- otutax %>% remove_rownames %>% column_to_rownames(var="OTU")
 
+# setting data to phyloseq format
+
 library(phyloseq)
 OTU <- otu_table(otu_data, taxa_are_rows = TRUE)
 TAX <-  tax_table(test)
-SAM <- sam_data(samdata)
+SAM <- sample_data(samdata)
 OTU
 TAX
 SAM
 
 DOD2017 <- phyloseq(OTU, TAX)
 
+#mystery answer to error in validobject
+
+rownames(samdata) <-samdata$SampleID
+
+
+#setting up ggplot themes
+
+physeq1 <- merge_phyloseq(DOD2017, SAM)
 
 theme_set(theme_bw())
 pal = "Set1"
