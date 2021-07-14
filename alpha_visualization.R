@@ -1,9 +1,12 @@
+# https://joey711.github.io/phyloseq/import-data.html#_microbio_me_qiime_(defunct)
+
 library(phyloseq)
 library(ggplot2)
 
 #read data
 otudata <- read.csv("DOD2017_otu_matix.csv")
 otutax <- read.csv("DOD2017_seperate_taxa.csv")
+samdata <- read.csv("DOD2017_metadata.csv")
 
 test <- as.matrix(otu_taxa, rownames.force = NA)
 
@@ -24,13 +27,36 @@ otu_taxa <- otutax %>% remove_rownames %>% column_to_rownames(var="OTU")
 library(phyloseq)
 OTU <- otu_table(otu_data, taxa_are_rows = TRUE)
 TAX <-  tax_table(test)
+SAM <- sam_data(samdata)
 OTU
 TAX
+SAM
 
-physeq = phyloseq(OTU, TAX)
+DOD2017 <- phyloseq(OTU, TAX)
 
 
+theme_set(theme_bw())
+pal = "Set1"
+scale_colour_discrete <-  function(palname=pal, ...){
+  scale_colour_brewer(palette=palname, ...)
+}
+scale_fill_discrete <-  function(palname=pal, ...){
+  scale_fill_brewer(palette=palname, ...)
+}
 
+#####################################################
+
+data("GlobalPatterns")
+
+
+#fix the random column
+
+df = subset(otu_data, select = -c(X) )
+
+
+plot_richness(DOD2017, measures=c( "Shannon"))
+
+plot_richness(DOD2017, x="human", color="SampleType", measures=c("Chao1", "Shannon"))
 
 
 # Taxa reorganizaion
