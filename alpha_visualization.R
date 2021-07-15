@@ -233,11 +233,11 @@ rownames(samdata.2017) <-samdata.2017$SampleID
 #change row labels --- removes "otu" and changes first column to row labels
 library(tidyverse)
 
-otudata.2015$OTUid <- sub(otudata.2015$OTUid, 
+otudata.2015$OTUiD <- sub(otudata.2015$OTUiD, 
                      pattern = "OTU_", replacement = "")
 
 
-otu_data.2015 <- otudata.2015 %>% remove_rownames %>% column_to_rownames(var="OTUid")
+otu_data.2015 <- otudata.2015 %>% remove_rownames %>% column_to_rownames(var="OTUiD")
 
 
 otudata.2017$OUT_ID <- sub(otudata.2017$OUT_ID, 
@@ -304,6 +304,20 @@ scale_fill_discrete <-  function(palname=pal, ...){
 
 #ggplot
 
-p <- plot_richness(physeqDOD, x="SampleType", color="Year", measures=c("Simpson"))
-p + geom_point(size=1, alpha=0.05)
+p <- plot_richness(physeqDOD, x="Year", color="SampleType", measures=c("Simpson", "Shannon"))
+p + geom_point(size=1, alpha=0.5)
+
+
+#### attempt to plot ANOVA ####
+
+ 
+vignette("phyloseq-basics")
+vignette("phyloseq-analysis")
+
+
+alpha_meas = c( "Shannon", "Simpson", "InvSimpson")
+
+p <- plot_richness(physeqDOD, x="Year", color="SampleType", measures=alpha_meas)
+
+p + geom_boxplot(data=p$data, aes(x=Year, y=value, color=NULL), alpha=0.05) 
 
