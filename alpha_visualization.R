@@ -210,6 +210,29 @@ p + geom_point(size=1, alpha=0.05)
 
 
 
+
+#### Taxa Reorganization ####
+
+
+library(tidyr)
+y <- otutaxa.oak %>% separate(taxonomy, c("domain", "phylum", "class", "order", "family", "genus"), "[][a-z ];")
+
+y$domain <- sub(y$domain,  pattern = "k__", replacement = "")
+ 
+y$phylum <- sub(y$phylum, pattern = "p__", replacement = "")
+   
+y$class <- sub(y$class, pattern = "c__", replacement = "")
+
+y$order <- sub(y$order, pattern = "o__", replacement = "")
+
+y$family <- sub(y$family, pattern = "f__", replacement = "")
+
+y$genus <- sub(y$genus,  pattern = "g__", replacement = "")
+  
+
+write.csv(y,"Oak_seperate_taxa.csv", row.names = FALSE)
+ 
+ 
 #### DOD 2015 + 2017 ####
 
 library(phyloseq)
@@ -224,13 +247,20 @@ otutax.2017 <- read.csv("DOD2017_seperate_taxa.csv")
 samdata.2017 <- read.csv("DOD2017_metadata.csv")
 
 
+otudata.oak <-read.csv("oak_data.2.csv")
+otutaxa.oak <- read.csv("oak_seperate_taxa.csv")
+samdata.oak <- read.csv('oak_metadata_2.csv')
+
 #change row names in taxa data to plot iD
 
 rownames(samdata.2015) <-samdata.2015$SampleID
 rownames(samdata.2017) <-samdata.2017$SampleID
 
+rownames(samdata.oak) <-samdata.oak$SampleID
+
 
 #change row labels --- removes "otu" and changes first column to row labels
+
 library(tidyverse)
 
 otudata.2015$OTUiD <- sub(otudata.2015$OTUiD, 
@@ -259,6 +289,10 @@ otutax.2017$OTU <- sub(otutax.2017$OTU,
 otu_taxa.2017 <- otutax.2017 %>% remove_rownames %>% column_to_rownames(var="OTU")
 
 
+otu_data.oak <- otudata.oak %>% remove_rownames %>% column_to_rownames(var="OTU.ID")
+
+otu_taxa.oak <- otutaxa.oak %>% remove_rownames %>% column_to_rownames(var="OTU.ID")
+
 
 #coerce matrix --- taxa needs to be matrix
 
@@ -266,7 +300,7 @@ taxa.2015 <- as.matrix(otu_taxa.2015, rownames.force = NA)
 
 taxa.2017 <- as.matrix(otu_taxa.2017, rownames.force = NA)
 
-
+taxa.oak <- as.matrix(otu_taxa.oak, rownames.force = NA)
 
 # setting data to phyloseq format
 
@@ -280,15 +314,25 @@ OTU.2017 <- otu_table(otu_data.2017, taxa_are_rows = TRUE)
 TAX.2017 <-  tax_table(taxa.2017)
 SAM.2017 <- sample_data(samdata.2017)
 
+OTU.oak <- otu_table(otu_data.oak, taxa_are_rows = TRUE)
+TAX.oak <-  tax_table(taxa.oak)
+SAM.oak <- sample_data(samdata.oak)
+
+
+oak <- phyloseq(OTU.oak, TAX.oak)
 DOD2015 <- phyloseq(OTU.2015, TAX.2015)
-DOD2017 <- phyloseq(OTU.2017, TAX.2017) #combines taxa and data into readable format
+DOD2017 <- phyloseq(OTU.2017, TAX.2017)#combines taxa and data into readable format
 
 
 physeq2017 <- merge_phyloseq(DOD2017, SAM.2017)#adds sample metadata to readable format
 
 physeq2015 <- merge_phyloseq(DOD2015, SAM.2015)
 
+physeqoak <- merge_phyloseq(oak, SAM.oak)
+
 physeqDOD <- merge_phyloseq(physeq2015, physeq2017)
+
+combined <- merge_phyloseq(physeqDOD, physeqoak)
 
 
 #setting up ggplot themes
@@ -315,9 +359,11 @@ vignette("phyloseq-basics")
 vignette("phyloseq-analysis")
 
 
-alpha_meas = c( "Shannon", "Simpson", "InvSimpson")
+alpha_meas = c("Simpson")
 
-p <- plot_richness(physeqDOD, x="Year", color="SampleType", measures=alpha_meas)
+p <- plot_richness(combined, x="SampleType", measures=alpha_meas)
 
-p + geom_boxplot(data=p$data, aes(x=Year, y=value, color=NULL), alpha=0.05) 
+p
+
+p + geom_boxplot(data=p$data, aes(x=SampleType, y=value), alpha=0.05) 
 
