@@ -115,16 +115,19 @@ otudata <- read.csv("DOD2015_data.csv")
 otutax <- read.csv("DOD2015_taxa.csv")
 samdata <- read.csv("DOD2015_metadata.csv")
 
-#coerce matrix
 
-test <- as.matrix(otu_taxa, rownames.force = NA)
+#change row names in taxa data to plot iD
 
-#change row labels
+rownames(samdata) <-samdata$SampleID
+
+
+#change row labels --- removes "otu" and changes first column to row labels
+library(tidyverse)
 
 otudata$OTUid <- sub(otudata$OTUid, 
                         pattern = "OTU_", replacement = "")
 
-library(tidyverse)
+
 otu_data <- otudata %>% remove_rownames %>% column_to_rownames(var="OTUid")
 
 
@@ -135,34 +138,40 @@ otu_taxa <- otutax %>% remove_rownames %>% column_to_rownames(var="OTUid")
 
 
 
+#coerce matrix --- taxa needs to be matrix
+
+test <- as.matrix(otu_taxa, rownames.force = NA)
+
 
 
 # Taxa reorganizaion
 
 
- library(tidyr)
-y <- otu_taxa %>% separate(Taxonomy, c("domain", "phylum", "class", "order", "family", "genus"), "[][a-z ];")
+#  library(tidyr)
+# y <- otu_taxa %>% separate(Taxonomy, c("domain", "phylum", "class", "order", "family", "genus"), "[][a-z ];")
+# 
+# 
+# 
+# y$domain <- sub(y$domain,  pattern = "k_", replacement = "")
+# 
+# 
+# y$phylum <- sub(y$phylum, 
+#                 pattern = "p__", replacement = "")
+#  
+#  y$class <- sub(y$class, 
+#                  pattern = "c__", replacement = "")
+# 
+#  y$order <- sub(y$order,
+#                 pattern = "o__", replacement = "")
+# 
+# y$family <- sub(y$family,
+#                pattern = "f__", replacement = "")
+#  y$genus <- sub(y$genus,
+#                 pattern = "g__", replacement = "")
+# 
+# write.csv(y,"DOD2015_seperate_taxa.csv", row.names = FALSE)
 
 
-
-y$domain <- sub(y$domain,  pattern = "k_", replacement = "")
-
-
-y$phylum <- sub(y$phylum, 
-                pattern = "p__", replacement = "")
- 
- y$class <- sub(y$class, 
-                 pattern = "c__", replacement = "")
-
- y$order <- sub(y$order,
-                pattern = "o__", replacement = "")
-
-y$family <- sub(y$family,
-               pattern = "f__", replacement = "")
- y$genus <- sub(y$genus,
-                pattern = "g__", replacement = "")
-
-write.csv(y,"DOD2015_seperate_taxa.csv", row.names = FALSE)
 
 
 # setting data to phyloseq format
@@ -175,15 +184,27 @@ OTU
 TAX
 SAM
 
-DOD2017 <- phyloseq(OTU, TAX)
-
-#mystery answer to error in validobject
-
-rownames(samdata) <-samdata$SampleID
+DOD2017 <- phyloseq(OTU, TAX) #combines taxa and data into readable format
 
 
-physeq1 <- merge_phyloseq(DOD2017, SAM)
+physeq1 <- merge_phyloseq(DOD2017, SAM) #adds sample metadata to readable format
 
+
+
+
+
+#setting up ggplot themes
+
+theme_set(theme_bw())
+pal = "Set1"
+scale_colour_discrete <-  function(palname=pal, ...){
+  scale_colour_brewer(palette=palname, ...)
+}
+scale_fill_discrete <-  function(palname=pal, ...){
+  scale_fill_brewer(palette=palname, ...)
+}
+
+#ggplot
 
 p <- plot_richness(physeq1, x="SampleType", color="SampleType", measures=c("Shannon", "Simpson", "InvSimpson"))
 p + geom_point(size=1, alpha=0.05)
