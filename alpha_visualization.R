@@ -109,7 +109,6 @@ p + geom_point(size=1, alpha=0.05)
 library(phyloseq)
 library(ggplot2)
 
-###DOD 2017 ####
 #read data
 otudata <- read.csv("DOD2015_data.csv")
 otutax <- read.csv("DOD2015_taxa.csv")
