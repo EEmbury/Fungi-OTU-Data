@@ -379,7 +379,7 @@ p <- plot_richness(physeqDOD, x="Year", color="SampleType", measures=c("Simpson"
 p + geom_point(size=1, alpha=0.5)
 
 
-#### attempt to plot ANOVA ####
+#### attempt to plot w/ box plot ####
 
  
 vignette("phyloseq-basics")
@@ -401,5 +401,8 @@ p + geom_boxplot(data=p$data, aes(x=SampleType, y=value), alpha=0.05)
 
 all.NMDS <- ordinate(alldata, "NMDS", "bray")
 
-plot_ordination(alldata, all.NMDS, color="SampleType")
+p1 <- plot_ordination(alldata, all.NMDS, color="SampleType")
 
+p2 <- plot_ordination(alldata, all.NMDS, color="SampleType")
+
+p2 + stat_ellipse(size = 1)
