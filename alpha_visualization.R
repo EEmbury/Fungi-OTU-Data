@@ -233,7 +233,7 @@ y$genus <- sub(y$genus,  pattern = "g__", replacement = "")
 write.csv(y,"2018_seperate_taxa_2.csv", row.names = FALSE)
  
  
-#### DOD 2015 + 2017 ####
+#### All data ####
 
 library(phyloseq)
 library(ggplot2)
@@ -393,4 +393,13 @@ p <- plot_richness(alldata, x="SampleType", measures=alpha_meas)
 p
 
 p + geom_boxplot(data=p$data, aes(x=SampleType, y=value), alpha=0.05) 
+
+
+
+
+###### Beta attempt #####
+
+all.NMDS <- ordinate(alldata, "NMDS", "bray")
+
+plot_ordination(alldata, all.NMDS, color="SampleType")
 
