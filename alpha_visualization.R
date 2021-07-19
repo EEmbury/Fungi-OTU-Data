@@ -255,6 +255,10 @@ otudata.2018 <-read.csv("2018_data.csv")
 otutaxa.2018 <- read.csv("2018_seperate_taxa_2.csv")
 samdata.2018 <- read.csv('2018_metadata.csv')
 
+# samdata.2018.GM <- read.csv('2018_metadata_GM.csv')
+# samdata.2018.N <- read.csv('2018_metadata_N.csv')
+# samdata.2018.heat <- read.csv('2018_metadata_heat.csv')
+
 #change row names in taxa data to plot iD
 
 rownames(samdata.2015) <-samdata.2015$SampleID
@@ -263,6 +267,10 @@ rownames(samdata.2017) <-samdata.2017$SampleID
 rownames(samdata.oak) <-samdata.oak$SampleID
 
 rownames(samdata.2018) <-samdata.2018$SampleID
+
+# rownames(samdata.2018.GM) <-samdata.2018.GM$SampleID
+# rownames(samdata.2018.N) <-samdata.2018.N$SampleID
+# rownames(samdata.2018.heat) <-samdata.2018.heat$SampleID
 
 #change row labels --- removes "otu" and changes first column to row labels
 
@@ -311,6 +319,7 @@ otutaxa.2018$OTU.ID <- sub(otutaxa.2018$OTU.ID,
 otu_taxa.2018 <- otutaxa.2018 %>% remove_rownames %>% column_to_rownames(var="OTU.ID")
 
 
+
 #coerce matrix --- taxa needs to be matrix
 
 taxa.2015 <- as.matrix(otu_taxa.2015, rownames.force = NA)
@@ -341,6 +350,10 @@ OTU.2018 <- otu_table(otu_data.2018, taxa_are_rows = TRUE)
 TAX.2018 <-  tax_table(taxa.2018)
 SAM.2018 <- sample_data(samdata.2018)
 
+# SAM.2018.GM <- sample_data(samdata.2018.GM)
+# SAM.2018.N <- sample_data(samdata.2018.N)
+# SAM.2018.heat <- sample_data(samdata.2018.heat)
+
 
 Phylo2018 <- phyloseq(OTU.2018, TAX.2018)
 oak <- phyloseq(OTU.oak, TAX.oak)
@@ -348,6 +361,10 @@ DOD2015 <- phyloseq(OTU.2015, TAX.2015)
 DOD2017 <- phyloseq(OTU.2017, TAX.2017)#combines taxa and data into readable format
 
 physeq2018 <- merge_phyloseq(Phylo2018, SAM.2018)
+# 
+# physeq2018.1 <- merge_phyloseq(physeq2018, SAM.2018.heat)
+# 
+# physeq2018.all <- merge_phyloseq(physeq2018.1, SAM.2018.N)
 
 physeq2017 <- merge_phyloseq(DOD2017, SAM.2017)#adds sample metadata to readable format
 
@@ -365,7 +382,7 @@ alldata <- merge_phyloseq(combined, physeq2018)
 #setting up ggplot themes
 
 theme_set(theme_bw())
-pal = "Set1"
+pal = "Set3"
 scale_colour_discrete <-  function(palname=pal, ...){
   scale_colour_brewer(palette=palname, ...)
 }
@@ -388,11 +405,11 @@ vignette("phyloseq-analysis")
 
 alpha_meas = c("Shannon")
 
-p <- plot_richness(alldata, x="SampleType", measures=alpha_meas)
+p <- plot_richness(alldata, x="SampleType.N", measures=alpha_meas)
 
 p
 
-p + geom_boxplot(data=p$data, aes(x=SampleType, y=value), alpha=0.05) 
+p + geom_boxplot(data=p$data, aes(x=SampleType.Heat, y=value), alpha=0.05) 
 
 
 
@@ -401,8 +418,7 @@ p + geom_boxplot(data=p$data, aes(x=SampleType, y=value), alpha=0.05)
 
 all.NMDS <- ordinate(alldata, "NMDS", "bray")
 
-p1 <- plot_ordination(alldata, all.NMDS, color="SampleType")
 
-p2 <- plot_ordination(alldata, all.NMDS, color="SampleType")
+p2 <- plot_ordination(alldata, all.NMDS, color="SampleType.GM")
 
 p2 + stat_ellipse(size = 1)
