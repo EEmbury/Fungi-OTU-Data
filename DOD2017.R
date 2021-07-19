@@ -27,7 +27,7 @@ DOD2017_invaded$alpha <- diversity(DOD2017_invaded,
                                    index = "shannon")
 
 
-hist(DOD2017_invaded$alpha)
+
 
 
 #### 2017 Control Alpha #
@@ -39,7 +39,6 @@ DOD2017_uninvaded$alpha <- diversity(DOD2017_uninvaded,
                                      MARGIN = 1,
                                      index = "shannon")
 
-hist(DOD2017_uninvaded$alpha)
 
 
 #### 2017 Eradicated #
@@ -51,8 +50,13 @@ DOD2017_eradicated$alpha <- diversity(DOD2017_eradicated,
                                       MARGIN = 1,
                                       index = "shannon")
 
+anova_result <- aov(alpha ~ , DOD2017_eradicated)
+summary(anova_result)
 
-hist(DOD2017_eradicated$alpha)
+install.packages("agricolae")
+library(agricolae)
+tukey_result <- HSD.test(anova_result, group = TRUE)
+print(tukey_result)
 
 ### ANOVA test ####
 
@@ -73,7 +77,9 @@ summary(anova_result)
 DOD2017_combined <- read_csv("DOD2017_combined_by_type.csv")
 
 
-beta_dist <- vegdist(DOD2017_combined[, DOD2017_combined$Type],
+
+
+beta_dist <- vegdist(DOD2017_combined[, DOD2017_combined$OTU1],
                        index = "bray")
 
 beta_dist <- vegdist(t(obj$data$otu_rarefied[, DOD2017_combined$Type]),
@@ -86,8 +92,40 @@ install.packages("betapart")
   library(betapart)
 
 
-beta.data <- beta.multi(DOD2017_combined, index.family="bray")
 
+
+
+otudata.2017 <- read.csv("DOD2017_otu_matix.csv")
+#otutax.2017 <- read.csv("DOD2017_seperate_taxa.csv")
+#samdata.2017 <- read.csv("DOD2017_metadata.csv")
+
+
+#fullDOD2017 <- merge(otudata.2017, samdata.2017)
+
+otu_data.2017 <- otudata.2017 %>% remove_rownames %>% column_to_rownames(var="OUT_ID")
+
+beta.data <- beta.multi.abund(t(otu_data.2017), index.family="bray")
+
+
+
+otudata.2015 <- read.csv("DOD2015_data.csv")
+otutax.2015 <- read.csv("DOD2015_seperate_taxa_2.csv")
+samdata.2015 <- read.csv("DOD2015_metadata.csv")
+otudata.2017 <- read.csv("DOD2017_otu_matix.csv")
+otutax.2017 <- read.csv("DOD2017_seperate_taxa.csv")
+samdata.2017 <- read.csv("DOD2017_metadata.csv")
+
+
+otudata.oak <-read.csv("oak_data.2.csv")
+otutaxa.oak <- read.csv("oak_seperate_taxa.csv")
+samdata.oak <- read.csv('oak_metadata_2.csv')
+
+otudata.2018 <-read.csv("2018_data.csv")
+otutaxa.2018 <- read.csv("2018_seperate_taxa_2.csv")
+samdata.2018 <- read.csv('2018_metadata.csv')
+
+
+### take 3
 
 install.packages("adespatial")
 library(adespatial)
