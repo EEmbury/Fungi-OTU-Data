@@ -413,7 +413,6 @@ p + geom_boxplot(data=p$data, aes(x=SampleType.Heat, y=value), alpha=0.05)
 
 
 
-
 ###### Beta attempt #####
 
 all.NMDS <- ordinate(alldata, "NMDS", "bray")
@@ -422,3 +421,7 @@ all.NMDS <- ordinate(alldata, "NMDS", "bray")
 p2 <- plot_ordination(alldata, all.NMDS, color="SampleType.GM")
 
 p2 + stat_ellipse(size = 1)
+
+
+
+
