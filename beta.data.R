@@ -14,7 +14,7 @@ beta.data.2017 <- bray.part(t(otu_data.2017))
 
 mds.2017 <- metaMDS(beta.data.2017$bray)
 mds_data_2017 <- as.data.frame(mds.2017$points)
-write.csv(mds_data_2017, "2017_beta.csv")
+#write.csv(mds_data_2017, "2017_beta.csv")
 
 
 
@@ -28,8 +28,8 @@ mds_data.17 <- dplyr::left_join(mds_data_2017, samdata.2017)
 
 library(ggplot2)
 ggplot(mds_data.17, aes(x = MDS1, y = MDS2, color = SampleType.GM)) +
-  geom_point()+
-  stat_ellipse()
+  geom_point(3)+
+  stat_ellipse(2)
 
 
 
@@ -44,7 +44,7 @@ beta.data.2015 <- bray.part(t(otu_data.2015))
 
 mds.2015 <- metaMDS(beta.data.2015$bray)
 mds_data_2015 <- as.data.frame(mds.2015$points)
-write.csv(mds_data_2017, "2017_beta.csv")
+#write.csv(mds_data_2017, "2017_beta.csv")
 
 
 
@@ -55,10 +55,10 @@ mds_data.15 <- dplyr::left_join(mds_data_2015, samdata.2015)
 
 
 library(ggplot2)
-ggplot(mds_data.15, aes(x = MDS1, y = MDS2, color = SampleType.GM)) +
-  geom_point()+
-  stat_ellipse()
 
+ggplot(mds_data.15, aes(x = MDS1, y = MDS2, color = SampleType.GM)) +
+  geom_point(size=3)+
+  stat_ellipse(size=2)
 
 
 ##############################################################3
