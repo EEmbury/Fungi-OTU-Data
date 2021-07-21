@@ -1,87 +1,16 @@
-########################################################################
-otudata.2017 <- read.csv("DOD2017_otu_matix.csv")
 
-otu_data.2017 <- otudata.2017 %>% remove_rownames %>% column_to_rownames(var="OUT_ID")
-otu_data.2017.t <- transpose(otu_data.2017)
-rownames(otu_data.2017.t) <- colnames(otu_data.2017)
-colnames(otu_data.2017.t) <- rownames(otu_data.2017)
-
-# beta.data.2017 <- bray.part(t(otu_data.2017))
-# 
-# 
-# mds.2017 <- metaMDS(beta.data.2017$bray)
-# mds_data_2017 <- as.data.frame(mds.2017$points)
-# #write.csv(mds_data_2017, "2017_beta.csv")
-
-
-
-
-samdata.2017 <- read.csv("DOD2017_metadata.csv")
-sam_data.2017 <- samdata.2017 %>% remove_rownames %>% column_to_rownames(var="SampleID")
-
-sam_data.2017.t <- transpose(sam_data.2017)
-
-rownames(sam_data.2017.t) <- colnames(sam_data.2017)
-colnames(sam_data.2017.t) <- rownames(sam_data.2017)
-# stress = 0.2746165 
-
-# 
-# mds_data_2017$SampleID <- rownames(mds_data_2017)
-# mds_data.17 <- dplyr::left_join(mds_data_2017, samdata.2017)
-
-
-aov(otudata.2017.t$OUT_ID ~ samdata.2017$SampleType.GM)
-
-
-
-
-#attempt #2 ########
-library(betapart)
-library(vegan)
-library(data.table)
-
-otudata.2017 <- read.csv("DOD2017_otu_matix.csv")
-otudata.2017.t <- transpose(otu_data.2017)
-rownames(otudata.2017.t) <- colnames(otu_data.2017)
-colnames(otudata.2017.t) <- rownames(otu_data.2017)
-
-groups <- factor(c(rep(1,45), rep(46,87), rep(88,132)), labels = c("Eradicated","Invaded", "Uninvaded"))
-groups
-
-dist<-bray.part(otudata.2017.t)
-
-bd<-betadisper(dist[[3]],groups)
-
-otu_data.2017 <- otudata.2017 %>% remove_rownames %>% column_to_rownames(var="OUT_ID")
-
-
-# samdata.2017 <- read.csv("DOD2017_metadata.csv")
-# 
-# rownames(samdata.2017) <- samdata.2017$SampleID 
-# 
-# sam_data.17 <- dplyr::left_join(otudata.2017.t, samdata.2017)
-
-
-# mds.2017 <- metaMDS(beta.data.2017$bray)
-# mds_data_2017 <- as.data.frame(mds.2017$points)
-#write.csv(mds_data_2017, "2017_beta.csv")
-
-
-#beta.data.2017 <- bray.part(t(otu_data.2017))
-
-samdata.2017 <- read.csv("DOD2017_metadata.csv")
-# stress = 0.2746165 
-
-
-mds_data_2017$SampleID <- rownames(mds_data_2017)
-mds_data.17 <- dplyr::left_join(mds_data_2017, samdata.2017)
-
-
-########### attempt 3 ##########
 
 ##### https://rfunctions.blogspot.com/2016/08/measuring-and-comparing-beta-diversity.html
+#clear environment
+rm(list = ls())
+
 
 library(dplyr)
+library(betapart)
+library(vegan)
+
+
+##### 2017 #####
 
 otudata.2017 <- read.csv("DOD2017_otu_matix_t.csv")
 
@@ -95,14 +24,159 @@ rownames(samdata.2017) <-samdata.2017$SampleID
 
 
 
-test <- dplyr::left_join(otudata.2017, samdata.2017)  ### run this line with the name for importing the csv
+#2017 <- dplyr::left_join(otudata.2017, samdata.2017)  ### run this line with the name for importing the csv
 
 
-groups <- factor(samdata.2017$SampleType.GM)
-groups
+groups.2017 <- factor(samdata.2017$SampleType.GM)
+groups.2017
 
-bd<-betadisper(beta.data.2017$bray,groups)
+bd.2017 <-betadisper(beta.data.2017$bray,groups.2017)
 
-anova(bd)
+anova.2017 <- anova(bd.2017)
 
-boxplot(bd)
+boxplot(bd.2017)
+
+
+#### 2015 ####
+
+otudata.2015 <- read.csv("DOD2015_data_t.csv")
+
+otu_data.2015 <- otudata.2015 %>% remove_rownames %>% column_to_rownames(var="SampleID")
+
+beta.data.2015 <- bray.part(otu_data.2015)
+
+
+samdata.2015 <- read.csv("DOD2015_metadata.csv")
+rownames(samdata.2015) <-samdata.2015$SampleID
+
+
+
+#2015 <- dplyr::left_join(otudata.2015, samdata.2015)  ### run this line with the name for importing the csv
+
+
+groups.2015 <- factor(samdata.2015$SampleType.GM)
+groups.2015
+
+bd.2015 <-betadisper(beta.data.2015$bray,groups.2015)
+
+anova.2015 <- anova(bd.2015)
+
+boxplot(bd.2015)
+
+
+#### oak #####
+
+otudata.oak <- read.csv("oak_data.2.t.csv")
+
+otu_data.oak <- otudata.oak %>% remove_rownames %>% column_to_rownames(var="SampleID")
+
+beta.data.oak <- bray.part(otu_data.oak)
+
+
+samdata.oak <- read.csv("oak_metadata_2.csv")
+rownames(samdata.oak) <-samdata.oak$SampleID
+
+
+groups.oak <- factor(samdata.oak$SampleType.N)
+groups.oak
+
+bd.oak <-betadisper(beta.data.oak$bray,groups.oak)
+
+anova.oak <- anova(bd.oak)
+
+boxplot(bd.oak)
+
+##### 2018 GM ######
+
+# need to figure out nested anova
+
+
+#### 2018 5 N ######
+
+otudata.2018N5 <- read.csv("2018_5_Nitrogen_t.csv")
+
+otu_data.2018N5 <- otudata.2018N5 %>% remove_rownames %>% column_to_rownames(var="SampleID")
+
+beta.data.2018N5 <- bray.part(otu_data.2018N5)
+
+
+samdata.2018N5 <- read.csv("2018_metadata_N_5.csv")
+rownames(samdata.2018N5) <-samdata.2018N5$SampleID
+
+
+groups.2018N5 <- factor(samdata.2018N5$SampleType.N)
+groups.2018N5
+
+bd.2018N5 <-betadisper(beta.data.2018N5$bray,groups.2018N5)
+
+anova.2018N5 <- anova(bd.2018N5)
+
+boxplot(bd.2018N5)
+
+
+###### 2018 3 N ######
+
+otudata.2018N3 <- read.csv("2018_3_Nitrogen_t.csv")
+
+otu_data.2018N3 <- otudata.2018N3 %>% remove_rownames %>% column_to_rownames(var="SampleID")
+
+beta.data.2018N3 <- bray.part(otu_data.2018N3)
+
+
+samdata.2018N3 <- read.csv("2018_metadata_N_3.csv")
+rownames(samdata.2018N3) <-samdata.2018N3$SampleID
+
+
+groups.2018N3 <- factor(samdata.2018N3$SampleType.N)
+groups.2018N3
+
+bd.2018N3 <-betadisper(beta.data.2018N3$bray,groups.2018N3)
+
+anova.2018N3 <- anova(bd.2018N3)
+
+boxplot(bd.2018N3)
+
+
+##### 2018 4 H ######
+
+otudata.2018H4 <- read.csv("2018_4_heating_t.csv")
+
+otu_data.2018H4 <- otudata.2018H4 %>% remove_rownames %>% column_to_rownames(var="SampleID")
+
+beta.data.2018H4 <- bray.part(otu_data.2018H4)
+
+
+samdata.2018H4 <- read.csv("2018_metadata_heat_S.csv")
+rownames(samdata.2018H4) <-samdata.2018H4$SampleID
+
+
+groups.2018H4 <- factor(samdata.2018H4$SampleType.Heat)
+groups.2018H4
+
+bd.2018H4 <-betadisper(beta.data.2018H4$bray,groups.2018H4)
+
+anova.2018H4 <- anova(bd.2018H4)
+
+boxplot(bd.2018H4)
+
+##### 2018 2 H ######
+
+otudata.2018H2 <- read.csv("2018_2_heated_t.csv")
+
+otu_data.2018H2 <- otudata.2018H2 %>% remove_rownames %>% column_to_rownames(var="SampleID")
+
+beta.data.2018H2 <- bray.part(otu_data.2018H2)
+
+
+samdata.2018H2 <- read.csv("2018_metadata_heat_c.csv")
+rownames(samdata.2018H2) <-samdata.2018H2$SampleID
+
+
+groups.2018H2 <- factor(samdata.2018H2$SampleType.Heat)
+groups.2018H2
+
+bd.2018H2 <-betadisper(beta.data.2018H2$bray,groups.2018H2)
+
+anova.2018H2 <- anova(bd.2018H2)
+
+boxplot(bd.2018H2)
