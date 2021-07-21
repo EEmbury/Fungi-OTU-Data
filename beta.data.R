@@ -2,15 +2,19 @@
 install.packages("betapart")
 library(betapart)
 library(vegan)
+library(data.table)
 
 
 
 
 ########################################################################
 otudata.2017 <- read.csv("DOD2017_otu_matix.csv")
+
+
 otu_data.2017 <- otudata.2017 %>% remove_rownames %>% column_to_rownames(var="OUT_ID")
 
 beta.data.2017 <- bray.part(t(otu_data.2017))
+
 
 mds.2017 <- metaMDS(beta.data.2017$bray)
 mds_data_2017 <- as.data.frame(mds.2017$points)
@@ -157,6 +161,41 @@ p.2018 + labs(title = "2018 Garlic Mustard",
 
 
 
+## take 2
+
+otudata.2018 <-read.csv("2018_1_corrected.csv")
+otu_data.2018 <- otudata.2018 %>% remove_rownames %>% column_to_rownames(var="OTUID")
+beta.data.2018 <- bray.part(t(otu_data.2018))
+
+
+mds.2018 <- metaMDS(beta.data.2018$bray)
+mds_data_2018 <- as.data.frame(mds.2018$points)
+#write.csv(mds_data_2017, "2017_beta.csv")
+
+samdata.2018 <- read.csv('2018_corrected_metadata.csv')
+
+mds_data_2018$SampleID <- rownames(mds_data_2018)
+mds_data.2018 <- dplyr::left_join(mds_data_2018, samdata.2018)
+
+
+p.2018 <- ggplot(mds_data.2018, aes(x = MDS1, y = MDS2, color = Treatment.ns)) +
+  geom_point(size= 3)+
+  stat_ellipse(size =2) +
+  theme(panel.grid = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+        plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0),
+        axis.title.x = element_text(color="black", vjust=1),
+        axis.title.y = element_text(color="black" , vjust=1))+
+  #scale_color_manual(values = cbbPalette) +
+  theme(strip.background = element_rect(colour="black", fill="white",
+                                        size=0.5, linetype="solid"))
+
+p.2018 + labs(title = "2018 Garlic Mustard",
+              caption = "Stress = 0.2568298")
+
+
 #############################
 otudata.2018.N <-read.csv("2018_5_Nitrogen_type.csv")
 otu_data.2018.N <- otudata.2018.N %>% remove_rownames %>% column_to_rownames(var="OTUID")
@@ -290,7 +329,7 @@ p.2018.H <- ggplot(mds_data.2018.H, aes(x = MDS1, y = MDS2, color = SampleType.H
   theme(strip.background = element_rect(colour="black", fill="white",
                                         size=0.5, linetype="solid"))
 
-p.2018.H4 + labs(title = "2018 Heated: Study 2",
+p.2018.H + labs(title = "2018 Heated: Study 2",
                  caption = "Stress =  0.1564374")
 
 

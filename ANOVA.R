@@ -90,6 +90,28 @@ boxplot(bd.oak)
 
 # need to figure out nested anova
 
+otudata.2018gm <- read.csv("2018_1_corrected_t.csv")
+
+otu_data.2018gm <- otudata.2018gm %>% remove_rownames %>% column_to_rownames(var="SampleID")
+
+beta.data.2018gm <- bray.part(otu_data.2018gm)
+
+
+samdata.2018gm <- read.csv("2018_corrected_metadata.csv")
+rownames(samdata.2018gm) <-samdata.2018gm$SampleID
+
+samdata.2018gm$Treatment <- paste(samdata.2018gm$Warming, samdata.2018gm$Nitrogen, samdata.2018gm$Invasion, samdata.2018gm$Soil_type)
+
+
+groups.2018gm <- factor(samdata.2018gm$Treatment)
+groups.2018gm
+
+bd.2018gm <-betadisper(beta.data.2018gm$bray, groups.2018gm)
+
+anova.2018gm <- anova(bd.2018gm)
+
+boxplot(bd.2018gm)
+
 
 #### 2018 5 N ######
 

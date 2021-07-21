@@ -283,11 +283,11 @@ otudata.2015$OTUiD <- sub(otudata.2015$OTUiD,
 otu_data.2015 <- otudata.2015 %>% remove_rownames %>% column_to_rownames(var="OTUiD")
 
 
-otudata.2017$OUT_ID <- sub(otudata.2017$OUT_ID, 
+otudata.2017$OTUID <- sub(otudata.2017$OTUID, 
                           pattern = "OTU", replacement = "")
 
 
-otu_data.2017 <- otudata.2017 %>% remove_rownames %>% column_to_rownames(var="OUT_ID")
+otu_data.2017 <- otudata.2017 %>% remove_rownames %>% column_to_rownames(var="OTUID")
 
 
 
@@ -405,20 +405,33 @@ vignette("phyloseq-analysis")
 
 alpha_meas = c("Shannon")
 
-p <- plot_richness(alldata, x="SampleType.N", measures=alpha_meas)
+p <- plot_richness(alldata, x="SampleType.GM", measures=alpha_meas)
 
 p
 
-p + geom_boxplot(data=p$data, aes(x=SampleType.Heat, y=value), alpha=0.05) 
+p + geom_boxplot(data=p$data, aes(x=SampleType.N, y=value), alpha=0.05) 
 
 
 
 ###### Beta attempt #####
 
-all.NMDS <- ordinate(alldata, "NMDS", "bray")
+all.NMDS <- ordinate(alldata , "NMDS", "bray")
 
 
-p2 <- plot_ordination(alldata, all.NMDS, color="SampleType.GM")
+p2 <- plot_ordination(alldata, all.NMDS, color="SampleType.N")
+
+p2 + stat_ellipse(size = 1)
+
+
+
+
+
+##### 2018 Beta #######
+
+NMDS_2018 <- ordinate( physeq2018, "NMDS", "bray")
+
+
+p2 <- plot_ordination(physeq2018, NMDS_2018, color="SampleType.GM")
 
 p2 + stat_ellipse(size = 1)
 
