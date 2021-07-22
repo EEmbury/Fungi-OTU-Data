@@ -237,7 +237,7 @@ p.2018.N + labs(title = "2018 Nitrogen: Study 5",
 
 otudata.2018.N3 <-read.csv("2018_3_Nitrogen_t.csv")
 otu_data.2018.N3 <- otudata.2018.N3 %>% remove_rownames %>% column_to_rownames(var="SampleID")
-beta.data.2018.N3 <- bray.part(t(otu_data.2018.N3))
+beta.data.2018.N3 <- bray.part(otu_data.2018.N3)
 
 
 mds.2018.N3 <- metaMDS(beta.data.2018.N3$bray)
@@ -265,14 +265,15 @@ p.2018.N3 <- ggplot(mds_data.2018.N3, aes(x = MDS1, y = MDS2, color = SampleType
                                         size=0.5, linetype="solid"))
 
 p.2018.N3 + labs(title = "2018 Nitrogen: Study 3",
-                caption = "Stress = 0.1294216")
+                caption = "Stress = 0.1294216; P-value = 0.0599
+")
 
 
 
 ######2018H4###################################
-otudata.2018.H4 <-read.csv("2018_4_heating_type.csv")
-otu_data.2018.H4 <- otudata.2018.H4 %>% remove_rownames %>% column_to_rownames(var="OTUID")
-beta.data.2018.H4 <- bray.part(t(otu_data.2018.H4))
+otudata.2018.H4 <-read.csv("2018_4_heating_t.csv")
+otu_data.2018.H4 <- otudata.2018.H4 %>% remove_rownames %>% column_to_rownames(var="SampleID")
+beta.data.2018.H4 <- bray.part(otu_data.2018.H4)
 
 
 mds.2018.H4 <- metaMDS(beta.data.2018.H4$bray)
@@ -300,13 +301,14 @@ p.2018.H4 <- ggplot(mds_data.2018.H4, aes(x = MDS1, y = MDS2, color = SampleType
                                         size=0.5, linetype="solid"))
 
 p.2018.H4 + labs(title = "2018 Heated: Study 4",
-                 caption = "Stress =  0.1822467")
+                 caption = "Stress =  0.1822467; P-value = 0.6573
+")
 
 #######2018H2###################################
 
-otudata.2018.H <-read.csv("2018_2_heated_type.csv")
-otu_data.2018.H <- otudata.2018.H %>% remove_rownames %>% column_to_rownames(var="OTUID")
-beta.data.2018.H <- bray.part(t(otu_data.2018.H))
+otudata.2018.H <-read.csv("2018_2_heated_t.csv")
+otu_data.2018.H <- otudata.2018.H %>% remove_rownames %>% column_to_rownames(var="SampleID")
+beta.data.2018.H <- bray.part(otu_data.2018.H)
 
 
 mds.2018.H <- metaMDS(beta.data.2018.H$bray)
@@ -334,6 +336,7 @@ p.2018.H <- ggplot(mds_data.2018.H, aes(x = MDS1, y = MDS2, color = SampleType.H
                                         size=0.5, linetype="solid"))
 
 p.2018.H + labs(title = "2018 Heated: Study 2",
-                 caption = "Stress =  0.1564374")
+                 caption = "Stress =  0.1564374; P-value = 0.0210
+")
 
 
