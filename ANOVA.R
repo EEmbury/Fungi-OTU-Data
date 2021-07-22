@@ -8,6 +8,8 @@ rm(list = ls())
 library(dplyr)
 library(betapart)
 library(vegan)
+install.packages("PERMANOVA")
+library(PERMANOVA)
 
 
 ##### 2017 #####
@@ -37,6 +39,30 @@ anova.2017 <- anova(bd.2017)
 boxplot(bd.2017)
 
 
+#write.csv(anova.2017, "beta_anova.csv", row.names = FALSE)
+
+
+
+### Permanova attempt:
+
+otudata.2017 <- read.csv("DOD2017_otu_matix_t.csv")
+
+otu_data.2017 <- otudata.2017 %>% remove_rownames %>% column_to_rownames(var="SampleID")
+
+samdata.2017 <- read.csv("DOD2017_metadata.csv")
+rownames(samdata.2017) <-samdata.2017$SampleID
+
+group_data.17 <- dplyr::left_join(otudata.2017, samdata.2017)
+
+groups.2017 <- factor(group_data.17$SampleType.GM)
+groups.2017
+
+bray.2017 <- DistContinuous(otu_data.2017, coef="Bray_Curtis")
+
+permanova.2017 <- PERMANOVA(bray.2017, groups.2017)
+
+
+
 #### 2015 ####
 
 otudata.2015 <- read.csv("DOD2015_data_t.csv")
@@ -63,6 +89,8 @@ anova.2015 <- anova(bd.2015)
 
 boxplot(bd.2015)
 
+#write.csv(anova.2015, "2015_beta_anova.csv", row.names = FALSE)
+
 
 #### oak #####
 
@@ -86,6 +114,8 @@ anova.oak <- anova(bd.oak)
 
 boxplot(bd.oak)
 
+#write.csv(anova.oak, "oak_beta_anova.csv", row.names = FALSE)
+
 ##### 2018 GM ######
 
 # need to figure out nested anova
@@ -100,17 +130,25 @@ beta.data.2018gm <- bray.part(otu_data.2018gm)
 samdata.2018gm <- read.csv("2018_corrected_metadata.csv")
 rownames(samdata.2018gm) <-samdata.2018gm$SampleID
 
-samdata.2018gm$Treatment <- paste(samdata.2018gm$Warming, samdata.2018gm$Nitrogen, samdata.2018gm$Invasion, samdata.2018gm$Soil_type)
+
 
 
 groups.2018gm <- factor(samdata.2018gm$Treatment)
+
+groups.2018gm.2 <- factor(samdata.2018gm$Invasion)
+
 groups.2018gm
 
-bd.2018gm <-betadisper(beta.data.2018gm$bray, groups.2018gm)
+bd.2018gm.treatment <-betadisper(beta.data.2018gm$bray, groups.2018gm)
+bd.2018gm.invasion <-betadisper(beta.data.2018gm$bray, groups.2018gm.2)
 
-anova.2018gm <- anova(bd.2018gm)
+anova.2018gm <- aov(bd.2018gm)
 
 boxplot(bd.2018gm)
+
+
+
+ANOVA1 <-aov(otudata.2018gm$SampleID ~ bd.2018gm.invasion / bd.2018gm.treatment)
 
 
 #### 2018 5 N ######
@@ -135,6 +173,8 @@ anova.2018N5 <- anova(bd.2018N5)
 
 boxplot(bd.2018N5)
 
+#write.csv(anova.2018N5, "2018N5_beta_anova.csv", row.names = FALSE)
+
 
 ###### 2018 3 N ######
 
@@ -157,6 +197,8 @@ bd.2018N3 <-betadisper(beta.data.2018N3$bray,groups.2018N3)
 anova.2018N3 <- anova(bd.2018N3)
 
 boxplot(bd.2018N3)
+
+#write.csv(anova.2018N3, "2018N3_beta_anova.csv", row.names = FALSE)
 
 
 ##### 2018 4 H ######
@@ -181,6 +223,9 @@ anova.2018H4 <- anova(bd.2018H4)
 
 boxplot(bd.2018H4)
 
+
+#write.csv(anova.2018H4, "2018H4_beta_anova.csv", row.names = FALSE)
+
 ##### 2018 2 H ######
 
 otudata.2018H2 <- read.csv("2018_2_heated_t.csv")
@@ -202,3 +247,5 @@ bd.2018H2 <-betadisper(beta.data.2018H2$bray,groups.2018H2)
 anova.2018H2 <- anova(bd.2018H2)
 
 boxplot(bd.2018H2)
+
+#write.csv(anova.2018H2, "2018H2_beta_anova.csv", row.names = FALSE)
