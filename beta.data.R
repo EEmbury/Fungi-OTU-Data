@@ -3,17 +3,18 @@ install.packages("betapart")
 library(betapart)
 library(vegan)
 library(data.table)
+library(dplyr)
+library(tidyverse)
 
 
 
+####2017####################################################################
+otudata.2017 <- read.csv("DOD2017_otu_matix_t.csv")
 
-########################################################################
-otudata.2017 <- read.csv("DOD2017_otu_matix.csv")
 
+otu_data.2017 <- otudata.2017 %>% remove_rownames %>% column_to_rownames(var="SampleID")
 
-otu_data.2017 <- otudata.2017 %>% remove_rownames %>% column_to_rownames(var="OUT_ID")
-
-beta.data.2017 <- bray.part(t(otu_data.2017))
+beta.data.2017 <- bray.part(otu_data.2017)
 
 
 mds.2017 <- metaMDS(beta.data.2017$bray)
@@ -49,16 +50,16 @@ p.2017 <- ggplot(mds_data.17, aes(x = MDS1, y = MDS2, color = SampleType.GM)) +
                                           size=0.5, linetype="solid"))
 
 p.2017 + labs(title = "Garlic Mustard 2017",
-                  caption = "Stress = 0.2746165 ")
+                  caption = "Stress = 0.2746165; P-value = 0.0010")2017
 
 
-##################################################################
+####2015##############################################################
 
 
-otudata.2015 <- read.csv("DOD2015_data.csv")
-otu_data.2015 <- otudata.2015 %>% remove_rownames %>% column_to_rownames(var="OTUiD")
+otudata.2015 <- read.csv("DOD2015_data_t.csv")
+otu_data.2015 <- otudata.2015 %>% remove_rownames %>% column_to_rownames(var="SampleID")
 
-beta.data.2015 <- bray.part(t(otu_data.2015))
+beta.data.2015 <- bray.part(otu_data.2015)
 
 mds.2015 <- metaMDS(beta.data.2015$bray)
 mds_data_2015 <- as.data.frame(mds.2015$points)
@@ -89,13 +90,14 @@ p.2015 <- ggplot(mds_data.15, aes(x = MDS1, y = MDS2, color = SampleType.GM)) +
                                         size=0.5, linetype="solid"))
 
 p.2015 + labs(title = "Garlic Mustard 2015",
-              caption = "Stress = 0.2298097 ")
+              caption = "Stress = 0.2287022; P-value = 0.0010
+ ")
 
 
-##############################################################
-otudata.oak <-read.csv("oak_data.2.csv")
-otu_data.oak <- otudata.oak %>% remove_rownames %>% column_to_rownames(var="OTU.ID")
-beta.data.oak <- bray.part(t(otu_data.oak))
+####oak##########################################################
+otudata.oak <-read.csv("oak_data.2.t.csv")
+otu_data.oak <- otudata.oak %>% remove_rownames %>% column_to_rownames(var="SampleID")
+beta.data.oak <- bray.part(otu_data.oak)
 
 mds.oak <- metaMDS(beta.data.oak$bray)
 mds_data_oak <- as.data.frame(mds.oak$points)
@@ -124,9 +126,10 @@ p.oak <- ggplot(mds_data.oak, aes(x = MDS1, y = MDS2, color = SampleType.N)) +
                                         size=0.5, linetype="solid"))
 
 p.oak + labs(title = "Oak Transplant",
-              caption = "Stress = 0.1682101 ")
+              caption = "Stress = 0.1682101; P-value = 0.0010
+ ")
 
-############################################################
+####2018.gm########################################################
 otudata.2018 <-read.csv("2018_GM_by_treatment.csv")
 otu_data.2018 <- otudata.2018 %>% remove_rownames %>% column_to_rownames(var="OTUID")
 beta.data.2018 <- bray.part(t(otu_data.2018))
@@ -193,13 +196,13 @@ p.2018 <- ggplot(mds_data.2018, aes(x = MDS1, y = MDS2, color = Treatment.ns)) +
                                         size=0.5, linetype="solid"))
 
 p.2018 + labs(title = "2018 Garlic Mustard",
-              caption = "Stress = 0.2568298")
+              caption = "Stress = 0.2568298")\
 
+#####2018N5#######
 
-#############################
-otudata.2018.N <-read.csv("2018_5_Nitrogen_type.csv")
-otu_data.2018.N <- otudata.2018.N %>% remove_rownames %>% column_to_rownames(var="OTUID")
-beta.data.2018.N <- bray.part(t(otu_data.2018.N))
+otudata.2018.N <-read.csv("2018_5_Nitrogen_t.csv")
+otu_data.2018.N <- otudata.2018.N %>% remove_rownames %>% column_to_rownames(var="SampleID")
+beta.data.2018.N <- bray.part(otu_data.2018.N)
 
 
 mds.2018.N <- metaMDS(beta.data.2018.N$bray)
@@ -226,13 +229,14 @@ p.2018.N <- ggplot(mds_data.2018.N, aes(x = MDS1, y = MDS2, color = SampleType.N
                                         size=0.5, linetype="solid"))
 
 p.2018.N + labs(title = "2018 Nitrogen: Study 5",
-              caption = "Stress = 0.1999836")
+              caption = "Stress = 0.1999836; P-value = 0.0010
+")
 
 
-#########################################3
+#######2018N3##################################
 
-otudata.2018.N3 <-read.csv("2018_3_Nitrogen_type.csv")
-otu_data.2018.N3 <- otudata.2018.N3 %>% remove_rownames %>% column_to_rownames(var="OTUID")
+otudata.2018.N3 <-read.csv("2018_3_Nitrogen_t.csv")
+otu_data.2018.N3 <- otudata.2018.N3 %>% remove_rownames %>% column_to_rownames(var="SampleID")
 beta.data.2018.N3 <- bray.part(t(otu_data.2018.N3))
 
 
@@ -265,7 +269,7 @@ p.2018.N3 + labs(title = "2018 Nitrogen: Study 3",
 
 
 
-#########################################333
+######2018H4###################################
 otudata.2018.H4 <-read.csv("2018_4_heating_type.csv")
 otu_data.2018.H4 <- otudata.2018.H4 %>% remove_rownames %>% column_to_rownames(var="OTUID")
 beta.data.2018.H4 <- bray.part(t(otu_data.2018.H4))
@@ -298,7 +302,7 @@ p.2018.H4 <- ggplot(mds_data.2018.H4, aes(x = MDS1, y = MDS2, color = SampleType
 p.2018.H4 + labs(title = "2018 Heated: Study 4",
                  caption = "Stress =  0.1822467")
 
-##########################################
+#######2018H2###################################
 
 otudata.2018.H <-read.csv("2018_2_heated_type.csv")
 otu_data.2018.H <- otudata.2018.H %>% remove_rownames %>% column_to_rownames(var="OTUID")
