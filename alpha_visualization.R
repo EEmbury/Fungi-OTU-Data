@@ -2,6 +2,7 @@
 
 library(phyloseq)
 library(ggplot2)
+library(vegan)
 
 ###DOD 2017 ####
 #read data
@@ -242,6 +243,7 @@ library(ggplot2)
 otudata.2015 <- read.csv("DOD2015_data.csv")
 otutax.2015 <- read.csv("DOD2015_seperate_taxa_2.csv")
 samdata.2015 <- read.csv("DOD2015_metadata.csv")
+
 otudata.2017 <- read.csv("DOD2017_otu_matix.csv")
 otutax.2017 <- read.csv("DOD2017_seperate_taxa.csv")
 samdata.2017 <- read.csv("DOD2017_metadata.csv")
@@ -253,7 +255,7 @@ samdata.oak <- read.csv('oak_metadata_2.csv')
 
 otudata.2018 <-read.csv("2018_data.csv")
 otutaxa.2018 <- read.csv("2018_seperate_taxa_2.csv")
-samdata.2018 <- read.csv('2018_metadata.csv')
+samdata.2018 <- read.csv('2018_metadata_2.csv')
 
 # samdata.2018.GM <- read.csv('2018_metadata_GM.csv')
 # samdata.2018.N <- read.csv('2018_metadata_N.csv')
@@ -308,7 +310,7 @@ otu_taxa.oak <- otutaxa.oak %>% remove_rownames %>% column_to_rownames(var="OTU.
 
 
 otudata.2018$OTUID <- sub(otudata.2018$OTUID, 
-                          pattern = "Otu", replacement = "")
+                        pattern = "Otu", replacement = "")
 
 
 otu_data.2018 <- otudata.2018 %>% remove_rownames %>% column_to_rownames(var="OTUID")
@@ -361,10 +363,6 @@ DOD2015 <- phyloseq(OTU.2015, TAX.2015)
 DOD2017 <- phyloseq(OTU.2017, TAX.2017)#combines taxa and data into readable format
 
 physeq2018 <- merge_phyloseq(Phylo2018, SAM.2018)
-# 
-# physeq2018.1 <- merge_phyloseq(physeq2018, SAM.2018.heat)
-# 
-# physeq2018.all <- merge_phyloseq(physeq2018.1, SAM.2018.N)
 
 physeq2017 <- merge_phyloseq(DOD2017, SAM.2017)#adds sample metadata to readable format
 
@@ -376,13 +374,13 @@ physeqDOD <- merge_phyloseq(physeq2015, physeq2017)
 
 combined <- merge_phyloseq(physeqDOD, physeqoak)
 
-alldata <- merge_phyloseq(combined, physeq2018)
+alldata.1 <- merge_phyloseq(combined, physeq2018)
 
 
 #setting up ggplot themes
 
 theme_set(theme_bw())
-pal = "Set3"
+pal = "Set1"
 scale_colour_discrete <-  function(palname=pal, ...){
   scale_colour_brewer(palette=palname, ...)
 }
@@ -405,20 +403,21 @@ vignette("phyloseq-analysis")
 
 alpha_meas = c("Shannon")
 
-p <- plot_richness(alldata, x="SampleType.GM", measures=alpha_meas)
+p <- plot_richness(alldata.1, x="simple", measures=alpha_meas)
 
 p
 
-p + geom_boxplot(data=p$data, aes(x=SampleType.N, y=value), alpha=0.05) 
+p + geom_boxplot(data=p$data, aes(x=simple, y=value), alpha=0.05) 
 
 
 
 ###### Beta attempt #####
 
-all.NMDS <- ordinate(alldata , "NMDS", "bray")
+
+all.NMDS <- ordinate(alldata.1, "NMDS", "bray")
 
 
-p2 <- plot_ordination(alldata, all.NMDS, color="SampleType.N")
+p2 <- plot_ordination(alldata.1, all.NMDS, color="simple")
 
 p2 + stat_ellipse(size = 1)
 
@@ -428,7 +427,7 @@ p2 + stat_ellipse(size = 1)
 
 ##### 2018 Beta #######
 
-NMDS_2018 <- ordinate( physeq2018, "NMDS", "bray")
+NMDS_2018 <- ordinate(combined, "NMDS", "bray")
 
 
 p2 <- plot_ordination(physeq2018, NMDS_2018, color="SampleType.GM")
