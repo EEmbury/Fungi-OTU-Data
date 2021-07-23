@@ -214,11 +214,12 @@ p + geom_point(size=1, alpha=0.05)
 
 #### Taxa Reorganization ####
 
+hemlock.taxa <- read.csv("hemlock_taxa.csv")
 
 library(tidyr)
-y <- otutaxa.2018 %>% separate(Taxonomy, c("domain", "phylum", "class", "order", "family", "genus"), "[][a-z ];")
+y <- hemlock.taxa %>% separate(taxonomy, c("kingdom", "phylum", "class", "order", "family", "genus"), "[][a-z ];")
 
-y$domain <- sub(y$domain,  pattern = "d__", replacement = "")
+y$kingdom <- sub(y$kingdom,  pattern = "_", replacement = "")
  
 y$phylum <- sub(y$phylum, pattern = "p__", replacement = "")
    
@@ -231,7 +232,7 @@ y$family <- sub(y$family, pattern = "f__", replacement = "")
 y$genus <- sub(y$genus,  pattern = "g__", replacement = "")
   
 
-write.csv(y,"2018_seperate_taxa_2.csv", row.names = FALSE)
+write.csv(y,"hemlock_seperate_taxa.csv", row.names = FALSE)
  
  
 #### All data ####
@@ -258,6 +259,7 @@ otutaxa.2018 <- read.csv("2018_seperate_taxa_2.csv")
 samdata.2018 <- read.csv('2018_metadata_2.csv')
 
 otudata.hemlock <- read.csv("hemlock_data.csv")
+otutaxa.hemlock <- read.csv("hemlock_seperate_taxa.csv")
 samdata.hemlock <- read.csv("hemlock_metadata.csv")
 
 # samdata.2018.GM <- read.csv('2018_metadata_GM.csv')
@@ -330,7 +332,8 @@ otu_taxa.2018 <- otutaxa.2018 %>% remove_rownames %>% column_to_rownames(var="OT
 
 
 
-otu_data.hemlock <- otudata.hemlock %>% remove_rownames %>% column_to_rownames(var="OTUID")
+otu_data.hemlock <- otudata.hemlock %>% remove_rownames %>% column_to_rownames(var="Otu.ID")
+otu_taxa.hemlock<- otutaxa.hemlock %>% remove_rownames %>% column_to_rownames(var="Otu.ID")
 
 
 
@@ -344,6 +347,8 @@ taxa.2017 <- as.matrix(otu_taxa.2017, rownames.force = NA)
 taxa.oak <- as.matrix(otu_taxa.oak, rownames.force = NA)
 
 taxa.2018 <- as.matrix(otu_taxa.2018, rownames.force = NA)
+
+taxa.hemlock <- as.matrix(otu_taxa.hemlock, rownames.force = NA)
 
 # setting data to phyloseq format
 
@@ -366,13 +371,15 @@ TAX.2018 <-  tax_table(taxa.2018)
 SAM.2018 <- sample_data(samdata.2018)
 
 OTU.hemlock <-  otu_table(otu_data.hemlock, taxa_are_rows = TRUE)
+Tax.hemlock <- tax_table(taxa.hemlock)
 SAM.hemlock <- sample_data(samdata.hemlock)
 
 # SAM.2018.GM <- sample_data(samdata.2018.GM)
 # SAM.2018.N <- sample_data(samdata.2018.N)
 # SAM.2018.heat <- sample_data(samdata.2018.heat)
 
-hemlock <- phyloseq(OTU.hemlock, SAM.hemlock)
+hemlock <- phyloseq(OTU.hemlock, Tax.hemlock)
+hemlock.2 <- merge_phyloseq(hemlock, SAM.hemlock)
 Phylo2018 <- phyloseq(OTU.2018, TAX.2018)
 oak <- phyloseq(OTU.oak, TAX.oak)
 DOD2015 <- phyloseq(OTU.2015, TAX.2015)
@@ -392,19 +399,8 @@ combined <- merge_phyloseq(physeqDOD, physeqoak)
 
 alldata.1 <- merge_phyloseq(combined, physeq2018)
 
-alldata.2 <- merge_phyloseq(alldata.1, hemlock)
+alldata.2 <- merge_phyloseq(alldata.1, hemlock.2)
 
-
-#setting up ggplot themes
-
-theme_set(theme_bw())
-pal = "Set1"
-scale_colour_discrete <-  function(palname=pal, ...){
-  scale_colour_brewer(palette=palname, ...)
-}
-scale_fill_discrete <-  function(palname=pal, ...){
-  scale_fill_brewer(palette=palname, ...)
-}
 
 #ggplot
 
@@ -432,8 +428,8 @@ p + geom_boxplot(data=p$data, aes(x=simple, y=value), alpha=0.05)
 ###### Beta visualization #####
 cbbPalette <- c("#009E73", "#e79f00", "#0072B2", "#D55E00", "#CC79A7", "#9999CC")
 
-
 all.NMDS <- ordinate(alldata.1, "NMDS", "bray")
+all.NMDS.2 <- ordinate(alldata.2, "NMDS", "bray")
 
 
 p.treatment <- plot_ordination(alldata.1, all.NMDS, color="Grouped")
@@ -469,6 +465,21 @@ p.simplified + geom_point(size= 2)+
   labs(title = "Treatment vs. Control Across Studies", caption = "Stress = 0.2431589; P-value = 0.694")
 
 
+
+p.vegetation <- plot_ordination(alldata.2, all.NMDS, color="Vegetation")
+
+p.vegetation + geom_point(size= 2, na.rm = TRUE)+
+  stat_ellipse(size =2) + 
+  theme(panel.grid = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+        plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0),
+        axis.title.x = element_text(color="black", vjust=1),
+        axis.title.y = element_text(color="black" , vjust=1))+
+  theme(strip.background = element_rect(colour="black", fill="white",
+                                        size=0.5, linetype="solid")) +
+  labs(title = "Treatment vs. Control Across Studies", caption = "") 
 
 
 #### ANOVA #####
