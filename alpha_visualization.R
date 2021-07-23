@@ -257,6 +257,9 @@ otudata.2018 <-read.csv("2018_data.csv")
 otutaxa.2018 <- read.csv("2018_seperate_taxa_2.csv")
 samdata.2018 <- read.csv('2018_metadata_2.csv')
 
+otudata.hemlock <- read.csv("hemlock_data.csv")
+samdata.hemlock <- read.csv("hemlock_metadata.csv")
+
 # samdata.2018.GM <- read.csv('2018_metadata_GM.csv')
 # samdata.2018.N <- read.csv('2018_metadata_N.csv')
 # samdata.2018.heat <- read.csv('2018_metadata_heat.csv')
@@ -269,6 +272,8 @@ rownames(samdata.2017) <-samdata.2017$SampleID
 rownames(samdata.oak) <-samdata.oak$SampleID
 
 rownames(samdata.2018) <-samdata.2018$SampleID
+
+rownames(samdata.hemlock) <-samdata.hemlock$sample
 
 # rownames(samdata.2018.GM) <-samdata.2018.GM$SampleID
 # rownames(samdata.2018.N) <-samdata.2018.N$SampleID
@@ -322,6 +327,14 @@ otu_taxa.2018 <- otutaxa.2018 %>% remove_rownames %>% column_to_rownames(var="OT
 
 
 
+
+
+
+otu_data.hemlock <- otudata.hemlock %>% remove_rownames %>% column_to_rownames(var="OTUID")
+
+
+
+
 #coerce matrix --- taxa needs to be matrix
 
 taxa.2015 <- as.matrix(otu_taxa.2015, rownames.force = NA)
@@ -338,7 +351,7 @@ library(phyloseq)
 
 OTU.2015 <- otu_table(otu_data.2015, taxa_are_rows = TRUE)
 TAX.2015 <-  tax_table(taxa.2015)
-SAM.2015 <- sample_data(samdata.2015)
+SAM.2015 <- sample_data(samdata.2015,  na.exclude(samdata.2015))
 
 OTU.2017 <- otu_table(otu_data.2017, taxa_are_rows = TRUE)
 TAX.2017 <-  tax_table(taxa.2017)
@@ -352,11 +365,14 @@ OTU.2018 <- otu_table(otu_data.2018, taxa_are_rows = TRUE)
 TAX.2018 <-  tax_table(taxa.2018)
 SAM.2018 <- sample_data(samdata.2018)
 
+OTU.hemlock <-  otu_table(otu_data.hemlock, taxa_are_rows = TRUE)
+SAM.hemlock <- sample_data(samdata.hemlock)
+
 # SAM.2018.GM <- sample_data(samdata.2018.GM)
 # SAM.2018.N <- sample_data(samdata.2018.N)
 # SAM.2018.heat <- sample_data(samdata.2018.heat)
 
-
+hemlock <- phyloseq(OTU.hemlock, SAM.hemlock)
 Phylo2018 <- phyloseq(OTU.2018, TAX.2018)
 oak <- phyloseq(OTU.oak, TAX.oak)
 DOD2015 <- phyloseq(OTU.2015, TAX.2015)
@@ -375,6 +391,8 @@ physeqDOD <- merge_phyloseq(physeq2015, physeq2017)
 combined <- merge_phyloseq(physeqDOD, physeqoak)
 
 alldata.1 <- merge_phyloseq(combined, physeq2018)
+
+alldata.2 <- merge_phyloseq(alldata.1, hemlock)
 
 
 #setting up ggplot themes
@@ -411,29 +429,57 @@ p + geom_boxplot(data=p$data, aes(x=simple, y=value), alpha=0.05)
 
 
 
-###### Beta attempt #####
+###### Beta visualization #####
+cbbPalette <- c("#009E73", "#e79f00", "#0072B2", "#D55E00", "#CC79A7", "#9999CC")
 
 
 all.NMDS <- ordinate(alldata.1, "NMDS", "bray")
 
 
-p2 <- plot_ordination(alldata.1, all.NMDS, color="simple")
+p.treatment <- plot_ordination(alldata.1, all.NMDS, color="Grouped")
 
-p2 + stat_ellipse(size = 1)
-
-
-
-
-
-##### 2018 Beta #######
-
-NMDS_2018 <- ordinate(combined, "NMDS", "bray")
-
-
-p2 <- plot_ordination(physeq2018, NMDS_2018, color="SampleType.GM")
-
-p2 + stat_ellipse(size = 1)
+p.treatment + geom_point(size= 2)+
+  stat_ellipse(size =2) +
+  theme(panel.grid = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+        plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0),
+        axis.title.x = element_text(color="black", vjust=1),
+        axis.title.y = element_text(color="black" , vjust=1))+
+  theme(strip.background = element_rect(colour="black", fill="white",
+                                        size=0.5, linetype="solid")) +
+   labs(title = "By Treatment", caption = "Stress = 0.2431589; P-value = 0.001")
 
 
 
+p.simplified <- plot_ordination(alldata.1, all.NMDS, color="simple")
 
+p.simplified + geom_point(size= 2)+
+  stat_ellipse(size =2) +
+  theme(panel.grid = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+        plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0),
+        axis.title.x = element_text(color="black", vjust=1),
+        axis.title.y = element_text(color="black" , vjust=1))+
+  theme(strip.background = element_rect(colour="black", fill="white",
+                                        size=0.5, linetype="solid")) +
+  labs(title = "Treatment vs. Control Across Studies", caption = "Stress = 0.2431589; P-value = 0.694")
+
+
+
+
+#### ANOVA #####
+#http://deneflab.github.io/MicrobeMiseq/demos/mothur_2_phyloseq.html#permanova
+
+bray <- phyloseq::distance(alldata.1, method = "bray")
+
+
+sampledf <- data.frame(sample_data(alldata.1))
+
+
+beta <- betadisper(bray, sampledf$simple)
+permutest(beta)
+                       
