@@ -245,6 +245,7 @@ otudata.2015 <- read.csv("DOD2015_data.csv")
 otutax.2015 <- read.csv("DOD2015_seperate_taxa_2.csv")
 samdata.2015 <- read.csv("DOD2015_metadata.csv")
 
+
 otudata.2017 <- read.csv("DOD2017_otu_matix.csv")
 otutax.2017 <- read.csv("DOD2017_seperate_taxa.csv")
 samdata.2017 <- read.csv("DOD2017_metadata.csv")
@@ -429,6 +430,8 @@ p + geom_boxplot(data=p$data, aes(x=simple, y=value), alpha=0.05)
 cbbPalette <- c("#009E73", "#e79f00", "#0072B2", "#D55E00", "#CC79A7", "#9999CC")
 
 all.NMDS <- ordinate(alldata.1, "NMDS", "bray")
+
+
 all.NMDS.2 <- ordinate(alldata.2, "NMDS", "bray")
 
 
@@ -466,7 +469,7 @@ p.simplified + geom_point(size= 2)+
 
 
 
-p.vegetation <- plot_ordination(alldata.2, all.NMDS, color="Vegetation")
+p.vegetation <- plot_ordination(alldata.1, all.NMDS, color="Vegetation")
 
 p.vegetation + geom_point(size= 2, na.rm = TRUE)+
   stat_ellipse(size =2) + 
@@ -479,7 +482,41 @@ p.vegetation + geom_point(size= 2, na.rm = TRUE)+
         axis.title.y = element_text(color="black" , vjust=1))+
   theme(strip.background = element_rect(colour="black", fill="white",
                                         size=0.5, linetype="solid")) +
-  labs(title = "Treatment vs. Control Across Studies", caption = "") 
+  labs(title = "Vegetation of Controls Across Studies", caption = "Stress = 0.2420825; P-value = 0.001") 
+
+
+
+p.site <- plot_ordination(alldata.1, all.NMDS, color="Site")
+
+p.site + geom_point(size= 2, na.rm = TRUE)+
+  stat_ellipse(size =2) + 
+  theme(panel.grid = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+        plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0),
+        axis.title.x = element_text(color="black", vjust=1),
+        axis.title.y = element_text(color="black" , vjust=1))+
+  theme(strip.background = element_rect(colour="black", fill="white",
+                                        size=0.5, linetype="solid")) +
+  labs(title = "Study Studies", caption = "Stress = 0.2420825; P-value = 0.064") 
+
+
+
+p.year <- plot_ordination(alldata.1, all.NMDS, color= "Year", justDF = TRUE)
+
+p.year + geom_point(size= 2)+
+  stat_ellipse(size =2)  +
+  theme(panel.grid = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+        plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0),
+        axis.title.x = element_text(color="black", vjust=1),
+        axis.title.y = element_text(color="black" , vjust=1))+
+  theme(strip.background = element_rect(colour="black", fill="white",
+                                        size=0.5, linetype="solid")) +
+  labs(title = "Study Years", caption = "Stress = 0.2420825; P-value = 0.001") 
 
 
 #### ANOVA #####
@@ -491,6 +528,22 @@ bray <- phyloseq::distance(alldata.1, method = "bray")
 sampledf <- data.frame(sample_data(alldata.1))
 
 
-beta <- betadisper(bray, sampledf$simple)
-permutest(beta)
+beta.simple <- betadisper(bray, sampledf$simple)
+simple.anova <- permutest(beta.simple)
+
+beta.year <- betadisper(bray, sampledf$Year)
+year.anova <- permutest(beta.year)
+
+beta.veg <- betadisper(bray, sampledf$Vegetation)
+veg.anova <- permutest(beta.veg)
+
+beta.site <- betadisper(bray, sampledf$Site)
+site.anova <- permutest(beta.site)
+
+beta.group <- betadisper(bray, sampledf$Grouped)
+group.anova <- permutest(beta.group)
+
+
+
+
                        
