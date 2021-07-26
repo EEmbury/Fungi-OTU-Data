@@ -403,13 +403,7 @@ alldata.1 <- merge_phyloseq(combined, physeq2018)
 alldata.2 <- merge_phyloseq(alldata.1, hemlock.2)
 
 
-#ggplot
-
-p <- plot_richness(physeqDOD, x="Year", color="SampleType", measures=c("Simpson", "Shannon"))
-p + geom_point(size=1, alpha=0.5)
-
-
-#### attempt to plot w/ box plot ####
+#### plot alpha w/ box plot ####
 
  
 vignette("phyloseq-basics")
@@ -418,24 +412,62 @@ vignette("phyloseq-analysis")
 
 alpha_meas = c("Shannon")
 
-p <- plot_richness(alldata.1, x="simple", measures=alpha_meas)
+p <- plot_richness(alldata.4, x="Grouped", measures=alpha_meas)
 
 p
 
-p + geom_boxplot(data=p$data, aes(x=simple, y=value), alpha=0.05) 
+p + geom_boxplot(data = p$data, aes(x=Grouped, y=value), alpha=0.05) 
 
 
 
 ###### Beta visualization #####
-cbbPalette <- c("#009E73", "#e79f00", "#0072B2", "#D55E00", "#CC79A7", "#9999CC")
+
+write.csv(alldata.1@otu_table,"all_otu.3.csv", row.names = FALSE)
+
+
 
 all.NMDS <- ordinate(alldata.1, "NMDS", "bray")
 
-
+# with hemlock
 all.NMDS.2 <- ordinate(alldata.2, "NMDS", "bray")
 
 
-p.treatment <- plot_ordination(alldata.1, all.NMDS, color="Grouped")
+#### remove NA #### by treatment
+
+samall <- read.csv("all_sam.csv")
+rownames(samall) <- samall$SampleID
+
+otuall <- read.csv("all_otu.3.csv")
+
+allsam <- sample_data(samall)
+
+allotu <- otu_table(otuall, taxa_are_rows = TRUE)
+
+alldata.4 <- merge_phyloseq(allotu, allsam)
+
+all.NMDS.4 <- ordinate(alldata.4, "NMDS", "bray")
+
+#### remove NA #### veg, site, year
+all_sample <- read.csv('alldata_sample.csv')
+rownames(all_sample) <-all_sample$SampleID
+
+all_data_otu <- read.csv("alldata_otu.csv")
+
+all.sam <- sample_data(all_sample)
+
+all.otu <- otu_table(all_data_otu, taxa_are_rows = TRUE)
+
+alldata.3 <- merge_phyloseq(all.otu, all.sam)
+
+all.NMDS.3 <- ordinate(alldata.3, "NMDS", "bray")
+
+
+
+cbbPalette <- c("#009E73", "#e79f00", "#0072B2", "#D55E00", "#CC79A7", "#9999CC")
+
+
+
+p.treatment <- plot_ordination(alldata.4, all.NMDS.4, color="Grouped")
 
 p.treatment + geom_point(size= 2)+
   stat_ellipse(size =2) +
@@ -469,7 +501,7 @@ p.simplified + geom_point(size= 2)+
 
 
 
-p.vegetation <- plot_ordination(alldata.1, all.NMDS, color="Vegetation")
+p.vegetation <- plot_ordination(alldata.3, all.NMDS.3, color="Vegetation")
 
 p.vegetation + geom_point(size= 2, na.rm = TRUE)+
   stat_ellipse(size =2) + 
@@ -486,7 +518,7 @@ p.vegetation + geom_point(size= 2, na.rm = TRUE)+
 
 
 
-p.site <- plot_ordination(alldata.1, all.NMDS, color="Site")
+p.site <- plot_ordination(alldata.3, all.NMDS.3, color="Site")
 
 p.site + geom_point(size= 2, na.rm = TRUE)+
   stat_ellipse(size =2) + 
@@ -503,9 +535,9 @@ p.site + geom_point(size= 2, na.rm = TRUE)+
 
 
 
-p.year <- plot_ordination(alldata.1, all.NMDS, color= "Year", justDF = TRUE)
+p.year.2 <- plot_ordination(alldata.3, all.NMDS.3, color= "Year")
 
-p.year + geom_point(size= 2)+
+p.year.2 + geom_point(size= 2)+
   stat_ellipse(size =2)  +
   theme(panel.grid = element_blank(),
         panel.background = element_rect(fill = "white"),
