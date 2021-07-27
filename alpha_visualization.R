@@ -400,7 +400,7 @@ combined <- merge_phyloseq(physeqDOD, physeqoak)
 
 alldata.1 <- merge_phyloseq(combined, physeq2018)
 
-alldata.2 <- merge_phyloseq(alldata.1, hemlock.2)
+#alldata.2 <- merge_phyloseq(alldata.1, hemlock.2)
 
 
 #### plot alpha w/ box plot ####
@@ -422,14 +422,14 @@ p + geom_boxplot(data = p$data, aes(x=Grouped, y=value), alpha=0.05)
 
 ###### Beta visualization #####
 
-write.csv(alldata.1@otu_table,"all_otu.3.csv", row.names = FALSE)
+#write.csv(alldata.1@otu_table,"all_otu.3.csv", row.names = FALSE)
 
 
 
 all.NMDS <- ordinate(alldata.1, "NMDS", "bray")
 
 # with hemlock
-all.NMDS.2 <- ordinate(alldata.2, "NMDS", "bray")
+#all.NMDS.2 <- ordinate(alldata.2, "NMDS", "bray")
 
 
 #### remove NA #### by treatment
@@ -480,7 +480,7 @@ p.treatment + geom_point(size= 2)+
         axis.title.y = element_text(color="black" , vjust=1))+
   theme(strip.background = element_rect(colour="black", fill="white",
                                         size=0.5, linetype="solid")) +
-   labs(title = "By Treatment", caption = "Stress = 0.2431589; P-value = 0.001")
+   labs(title = "By Treatment", caption = "Stress = 0.2301558; P-value = 0.001")
 
 
 
@@ -554,26 +554,31 @@ p.year.2 + geom_point(size= 2)+
 #### ANOVA #####
 #http://deneflab.github.io/MicrobeMiseq/demos/mothur_2_phyloseq.html#permanova
 
-bray <- phyloseq::distance(alldata.1, method = "bray")
+bray.1 <- phyloseq::distance(alldata.1, method = "bray")
+bray.3 <- phyloseq::distance(alldata.3, method = "bray")
+bray.4 <- phyloseq::distance(alldata.4, method = "bray")
 
 
-sampledf <- data.frame(sample_data(alldata.1))
+sampledf.1 <- data.frame(sample_data(alldata.1))
+sampledf.3 <- data.frame(sample_data(alldata.3))
+sampledf.4 <- data.frame(sample_data(alldata.4))
 
 
-beta.simple <- betadisper(bray, sampledf$simple)
+beta.simple <- betadisper(bray.1, sampledf.1$simple)
 simple.anova <- permutest(beta.simple)
 
-beta.year <- betadisper(bray, sampledf$Year)
+beta.year <- betadisper(bray.3, sampledf.3$Year)
 year.anova <- permutest(beta.year)
 
-beta.veg <- betadisper(bray, sampledf$Vegetation)
+beta.veg <- betadisper(bray.3, sampledf.3$Vegetation)
 veg.anova <- permutest(beta.veg)
 
-beta.site <- betadisper(bray, sampledf$Site)
+beta.site <- betadisper(bray.3, sampledf.3$Site)
 site.anova <- permutest(beta.site)
 
-beta.group <- betadisper(bray, sampledf$Grouped)
-group.anova <- permutest(beta.group)
+beta.group <- betadisper(bray.4, sampledf.4$Grouped)
+group.anova <- permutest(beta.group, pairwise = TRUE)
+
 
 
 
