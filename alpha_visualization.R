@@ -412,11 +412,31 @@ vignette("phyloseq-analysis")
 
 alpha_meas = c("Shannon")
 
-p <- plot_richness(alldata.4, x="Grouped", measures=alpha_meas)
+p <- plot_richness(alldata.4, x="Grouped", measures=alpha_meas, color = "Grouped")+
+  labs(title = "By Treatment" , caption = "P-value = 0.24547348")
 
 p
 
-p + geom_boxplot(data = p$data, aes(x=Grouped, y=value), alpha=0.05) 
+p + geom_boxplot(data = p$data, aes(x=Grouped, y=value, color = NULL), alpha=0.05) +
+  xlab("Treatment") +
+  theme(panel.grid = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+        plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0),
+        axis.title.x = element_text(color="black", vjust=1),
+        axis.title.y = element_text(color="black" , vjust=1))+
+  theme(strip.background = element_rect(colour="black", fill="white",
+                                        size=0.5, linetype="solid"))
+
+
+
+otuall.t$Alpha <- diversity(otuall.t,
+                          MARGIN = 1,
+                          index = "shannon")
+
+
+write.csv(otuall.t, "otu_alpha_2.csv", row.names =TRUE)
 
 
 
@@ -437,7 +457,13 @@ all.NMDS <- ordinate(alldata.1, "NMDS", "bray")
 samall <- read.csv("all_sam.csv")
 rownames(samall) <- samall$SampleID
 
+rownames(otuall.t) <- colnames(otuall)
+colnames(otuall.t) <- rownames(otuall)
+
 otuall <- read.csv("all_otu.3.csv")
+
+library(data.table)
+otuall.t <- transpose(otuall)
 
 allsam <- sample_data(samall)
 
@@ -579,6 +605,83 @@ site.anova <- permutest(beta.site)
 beta.group <- betadisper(bray.4, sampledf.4$Grouped)
 group.anova <- permutest(beta.group, pairwise = TRUE)
 
+
+
+
+
+
+#### mixed effect model ####
+
+
+
+if(!require(psych)){install.packages("psych")}
+if(!require(lme4)){install.packages("lme4")}
+if(!require(lmerTest)){install.packages("lmerTest")}
+if(!require(multcompView)){install.packages("multcompView")}
+if(!require(lsmeans)){install.packages("lsmeans")}
+if(!require(nlme)){install.packages("nlme")}
+if(!require(car)){install.packages("car")}
+if(!require(rcompanion)){install.packages("rcompanion")}
+
+Data = alldata.4@sam_data
+
+Data.2 <- as.matrix(Data, rownames.force = NA)
+
+###  Order factors by the order in data frame
+###  Otherwise, R will alphabetize them
+
+Data$Grouped = factor(Data$Grouped,
+                        levels=unique(Data$Grouped))
+
+Data$Year = factor(Data$Year,
+                         levels=unique(Data$Year))
+
+###  Check the data frame
+
+library(psych)
+headTail(Data)
+str(Data)
+summary(Data)   
+
+### Remove unnecessary objects
+
+rm(Input)
+
+#In this first example, the model will be specified with the lmer function 
+#in the package lme4.  The term (1|Town) in the model formula indicates that 
+#Town should be treated as a random variable, with each level having its own 
+#in the model.  The anova function in the package lmerTest is used to 
+#produce p-values for the fixed effects.  The rand function in the package 
+#lmerTest produces p-values for the random effects. 
+
+library(lme4)
+library(lmerTest)
+
+model = lmer(alldata.4@sam_data ~ Grouped + (1|plot),
+             data=NULL,
+             REML=TRUE)
+
+
+anova(model)
+rand(model)
+
+#posthoc analysis 
+
+library(multcompView)
+library(lsmeans)
+
+marginal = lsmeans(model, 
+                   ~ treatment)
+
+CLD = cld(marginal,
+          alpha=0.05, 
+          Letters=letters,        ### Use lower-case letters for .group
+          adjust="tukey")         ###  Tukey-adjusted comparisons
+
+CLD
+
+pairs(marginal,
+      adjust="tukey")
 
 
 
