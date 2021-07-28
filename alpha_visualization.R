@@ -413,13 +413,14 @@ vignette("phyloseq-analysis")
 alpha_meas = c("Shannon")
 
 p <- plot_richness(alldata.4, x="Grouped", measures=alpha_meas, color = "Grouped")+
-  labs(title = "By Treatment" , caption = "P-value = 0.24547348")
+  labs(title = "Alpha Diversity Measurment by Treatment" , caption = "P-value = 0.24547348")
 
 p
 
 p + geom_boxplot(data = p$data, aes(x=Grouped, y=value, color = NULL), alpha=0.05) +
   xlab("Treatment") +
   theme(panel.grid = element_blank(),
+        legend.position = "none",
         panel.background = element_rect(fill = "white"),
         panel.border = element_rect(color = "black", fill = NA, size = 0.5),
         plot.title = element_text(hjust = 0.5),
@@ -435,6 +436,12 @@ otuall.t$Alpha <- diversity(otuall.t,
                           MARGIN = 1,
                           index = "shannon")
 
+otu_year_group <- read.csv("otu_alpha_2.csv")
+
+mixed_alpha <- aov(Alpha ~ Grouped*Year, data = otu_year_group)
+mixed_alpha
+
+TukeyHSD(mixed_alpha)
 
 write.csv(otuall.t, "otu_alpha_2.csv", row.names =TRUE)
 
@@ -561,9 +568,9 @@ p.site + geom_point(size= 2, na.rm = TRUE)+
 
 
 
-p.year.2 <- plot_ordination(alldata.3, all.NMDS.3, color= "Year")
+p.year <- plot_ordination(alldata.3, all.NMDS.3, color= "Year")
 
-p.year.2 + geom_point(size= 2)+
+p.year + geom_point(size= 2)+
   stat_ellipse(size =2)  +
   theme(panel.grid = element_blank(),
         panel.background = element_rect(fill = "white"),
@@ -594,7 +601,9 @@ beta.simple <- betadisper(bray.1, sampledf.1$simple)
 simple.anova <- permutest(beta.simple)
 
 beta.year <- betadisper(bray.3, sampledf.3$Year)
-year.anova <- permutest(beta.year)
+year.anova <- permutest(beta.year, pairwise = TRUE)
+
+year.anova
 
 beta.veg <- betadisper(bray.3, sampledf.3$Vegetation)
 veg.anova <- permutest(beta.veg)
